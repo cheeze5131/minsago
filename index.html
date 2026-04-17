@@ -1,0 +1,3207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>민사고 합격 프로젝트</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #12151c;
+    --surface2: #1a1e28;
+    --border: rgba(255,255,255,0.07);
+    --accent: #c8a96e;
+    --accent2: #e8c98a;
+    --text: #e8e6e0;
+    --muted: #7a7870;
+    --danger: #e06060;
+    --success: #6ec89a;
+    --info: #6ea8c8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(200,169,110,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 90%, rgba(110,168,200,0.04) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Nav */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 200;
+    background: rgba(10,12,16,0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    height: 56px;
+  }
+  .nav-logo {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  .nav-tabs {
+    display: flex;
+    gap: 2px;
+    flex: 1;
+    align-items: stretch;
+    height: 56px;
+  }
+
+  /* 각 메뉴 그룹 */
+  .nav-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  /* 마우스 올렸을 때 드롭다운 표시 */
+  .nav-group:hover .nav-dropdown {
+    display: block;
+    animation: dropIn 0.18s cubic-bezier(.4,0,.2,1);
+  }
+  @keyframes dropIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* 상위 탭 버튼 */
+  .nav-tab {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px;
+    padding: 0 12px;
+    height: 56px;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+  .nav-tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+  .nav-tab.active { color: var(--accent); background: rgba(200,169,110,0.08); }
+
+  /* 드롭다운 패널 */
+  .nav-dropdown {
+    display: none;
+    position: absolute;
+    top: 56px;
+    left: 0;
+    min-width: 150px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--accent);
+    border-radius: 0 0 10px 10px;
+    padding: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    z-index: 300;
+  }
+  .nav-dropdown button {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px;
+    padding: 9px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.12s;
+    white-space: nowrap;
+  }
+  .nav-dropdown button:hover {
+    background: rgba(200,169,110,0.1);
+    color: var(--accent);
+  }
+
+  /* 모바일 햄버거 버튼 */
+  .nav-hamburger {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 22px;
+    cursor: pointer;
+    padding: 4px 8px;
+    flex-shrink: 0;
+  }
+  /* 모바일 전체 메뉴 */
+  .nav-mobile-menu {
+    display: none;
+    position: fixed;
+    top: 56px; left: 0; right: 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    z-index: 199;
+    padding: 12px;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .nav-mobile-menu.open { display: flex; }
+  .nav-mobile-menu button {
+    background: none; border: none;
+    color: var(--muted); font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px; padding: 12px 16px; border-radius: 8px;
+    cursor: pointer; text-align: left; transition: all 0.12s;
+  }
+  .nav-mobile-menu button:hover { background: rgba(200,169,110,0.1); color: var(--accent); }
+  .nav-mobile-menu .mobile-cat {
+    font-size: 11px; color: var(--accent); font-weight: 500;
+    padding: 8px 16px 4px; letter-spacing: 0.08em;
+  }
+  @media (max-width: 768px) {
+    .nav-tabs { display: none; }
+    .nav-hamburger { display: block; }
+    .login-btn { display: none; }
+  }
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    white-space: nowrap;
+    margin-left: 8px;
+  }
+  .login-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* Main */
+  main {
+    padding-top: 76px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-left: 24px;
+    padding-right: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Page header */
+  .page-header {
+    padding: 32px 0 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+  .page-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .page-title span { color: var(--accent); }
+  .page-subtitle { color: var(--muted); font-size: 13px; margin-top: 6px; }
+
+  /* Sections */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 16px;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: rgba(200,169,110,0.2); }
+  .card-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+  }
+
+  /* Grid */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* ─── DASHBOARD ─── */
+  .stat-big {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-label { font-size: 13px; color: var(--muted); }
+  .dday-card {
+    background: linear-gradient(135deg, rgba(200,169,110,0.1) 0%, rgba(200,169,110,0.03) 100%);
+    border-color: rgba(200,169,110,0.25);
+  }
+
+  /* Progress bar */
+  .progress-wrap { margin-top: 8px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .progress-bar { height: 5px; background: var(--surface2); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 99px; transition: width 0.8s cubic-bezier(.4,0,.2,1); }
+
+  /* Recent tasks in dashboard */
+  .task-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .task-row:last-child { border-bottom: none; }
+  .task-check {
+    width: 18px; height: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .task-check.done { background: var(--accent); border-color: var(--accent); }
+  .task-check.done::after { content: '✓'; font-size: 11px; color: #0a0c10; font-weight: 700; }
+  .task-text { flex: 1; }
+  .task-text.done { text-decoration: line-through; color: var(--muted); }
+  .task-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-weight: 500;
+  }
+  .tag-red { background: rgba(224,96,96,0.12); color: var(--danger); }
+  .tag-gold { background: rgba(200,169,110,0.12); color: var(--accent); }
+  .tag-blue { background: rgba(110,168,200,0.12); color: var(--info); }
+  .tag-green { background: rgba(110,200,154,0.12); color: var(--success); }
+
+  /* ─── CHECKLIST ─── */
+  .cl-category { margin-bottom: 28px; }
+  .cl-category-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(200,169,110,0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .cl-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+    border-radius: 6px;
+    padding-left: 8px;
+  }
+  .cl-item:hover { background: var(--surface2); }
+  .cl-item:last-child { border-bottom: none; }
+  .cl-info { flex: 1; }
+  .cl-name { font-size: 14px; margin-bottom: 3px; }
+  .cl-name.done { text-decoration: line-through; color: var(--muted); }
+  .cl-date { font-size: 12px; color: var(--muted); }
+  .cl-priority { font-size: 11px; padding: 2px 7px; border-radius: 99px; flex-shrink: 0; margin-top: 2px; }
+
+  /* Date input */
+  .date-badge {
+    font-size: 11px;
+    padding: 3px 10px;
+    background: var(--surface2);
+    border-radius: 6px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  /* ─── GRADES ─── */
+  .grade-subject {
+    display: flex; align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+  }
+  .grade-subject:last-child { border-bottom: none; }
+  .grade-name { font-size: 14px; flex: 1; }
+  .grade-input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    width: 80px;
+    text-align: center;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .grade-input:focus { border-color: var(--accent); }
+  .grade-bar-wrap { width: 120px; }
+  .grade-level {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 99px;
+    text-align: center;
+    width: 60px;
+  }
+
+  /* ─── ESSAY ─── */
+  .essay-prompt {
+    background: var(--surface2);
+    border-left: 3px solid var(--accent);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+  .essay-textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    line-height: 1.8;
+    padding: 16px;
+    border-radius: 10px;
+    resize: vertical;
+    min-height: 200px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .essay-textarea:focus { border-color: var(--accent); }
+  .essay-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+  .char-count { font-size: 12px; color: var(--muted); }
+  .char-count span { color: var(--accent); font-weight: 500; }
+
+  /* ─── INTERVIEW ─── */
+  .q-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .q-card:hover { border-color: rgba(200,169,110,0.25); }
+  .q-card.open { border-color: rgba(200,169,110,0.3); }
+  .q-card.answered-no { border-left: 3px solid var(--danger); }
+  .q-card.answered-no .q-number::after { content: ' ✕ 미작성'; color: var(--danger); font-size: 11px; }
+  .q-card.answered-partial { border-left: 3px solid #c8a930; }
+  .q-card.answered-partial .q-number::after { content: ' … 작성 중'; color: #c8a930; font-size: 11px; }
+  .q-card.answered { border-left: 3px solid var(--success); }
+  .q-card.answered .q-number::after { content: ' ✓ 작성완료'; color: var(--success); font-size: 11px; }
+  .q-number {
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+  .q-text { font-size: 15px; line-height: 1.6; }
+  .q-answer {
+    display: none;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .q-card.open .q-answer { display: block; }
+  .answer-area {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    line-height: 1.8;
+    padding: 12px;
+    border-radius: 8px;
+    resize: vertical;
+    min-height: 120px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .answer-area:focus { border-color: var(--accent); }
+  .q-tip {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: rgba(200,169,110,0.05);
+    border-radius: 6px;
+    border-left: 2px solid rgba(200,169,110,0.3);
+  }
+
+  /* ─── STRATEGY ─── */
+  .info-block {
+    padding: 16px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .info-block-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .info-list { list-style: none; }
+  .info-list li {
+    font-size: 13px;
+    color: var(--text);
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    line-height: 1.6;
+  }
+  .info-list li:last-child { border-bottom: none; }
+  .info-list li::before { content: '·'; color: var(--accent); flex-shrink: 0; }
+
+  /* Button */
+  .btn {
+    background: var(--accent);
+    color: #0a0c10;
+    border: none;
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover { background: var(--accent2); transform: translateY(-1px); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { color: var(--text); background: var(--surface2); transform: none; }
+
+  /* Tag selector buttons in add-task form */
+  .tag-sel-btn {
+    flex:1; border:1px solid var(--border); background:transparent;
+    font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:500;
+    padding:4px 0; border-radius:6px; cursor:pointer; transition:all 0.15s; color:var(--muted);
+  }
+  .tag-sel-btn.selected { border-color: currentColor; }
+  .tag-red-sel.selected   { background:rgba(224,96,96,0.12);  color:var(--danger); }
+  .tag-gold-sel.selected  { background:rgba(200,169,110,0.12);color:var(--accent); }
+  .tag-blue-sel.selected  { background:rgba(110,168,200,0.12);color:var(--info);   }
+  .tag-green-sel.selected { background:rgba(110,200,154,0.12);color:var(--success);}
+  /* delete & edit buttons inside task row */
+  .task-edit-btn {
+    background:none; border:none; cursor:pointer; color:var(--muted);
+    font-size:12px; padding:2px 5px; border-radius:4px; transition:color 0.15s; flex-shrink:0;
+  }
+  .task-edit-btn:hover { color: var(--text); }
+
+  /* Semester tabs */
+  .sem-tab {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .sem-tab:hover { color: var(--text); background: var(--surface2); }
+  .sem-tab.active { color: var(--accent); background: rgba(200,169,110,0.1); border-color: rgba(200,169,110,0.3); }
+
+  /* Google Calendar button */
+  .gcal-btn {
+    background: transparent;
+    border: 1px solid rgba(110,168,200,0.3);
+    color: var(--info);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .gcal-btn:hover { background: rgba(110,168,200,0.1); border-color: var(--info); }
+
+  /* Divider */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+  /* Fade-in animation */
+  .section.active { animation: fadeUp 0.3s ease; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive */
+  @media (max-width: 700px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    nav { padding: 0 16px; }
+    main { padding-left: 16px; padding-right: 16px; }
+    .page-title { font-size: 22px; }
+  }
+
+  /* School Life sections */
+  .sl-section { margin-bottom: 8px; }
+  .sl-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(200,169,110,0.2);
+  }
+  .sl-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: grid;
+    gap: 8px;
+  }
+  .sl-item-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sl-item input, .sl-item textarea, .sl-item select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    padding: 7px 10px;
+    border-radius: 7px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.15s;
+  }
+  .sl-item input:focus, .sl-item textarea:focus { border-color: var(--accent); }
+  .sl-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+</style>
+
+</head>
+<body>
+
+<nav id="main-nav">
+  <div class="nav-logo">민사고 합격 프로젝트</div>
+  <div class="nav-tabs">
+
+    <!-- 홈 -->
+    <div class="nav-group">
+      <button class="nav-tab active" onclick="showSection('dashboard',this)">🏠 홈</button>
+      <div class="nav-dropdown">
+        <button onclick="showSection('dashboard',this)">대시보드</button>
+        <button onclick="showSection('checklist',this)">일정 체크리스트</button>
+      </div>
+    </div>
+
+    <!-- 성적 관리 -->
+    <div class="nav-group">
+      <button class="nav-tab" onclick="showSection('grades',this)">📊 성적 관리</button>
+      <div class="nav-dropdown">
+        <button onclick="showSection('grades',this)">학기별 성취도</button>
+      </div>
+    </div>
+
+    <!-- 학교생활 관리 -->
+    <div class="nav-group">
+      <button class="nav-tab" onclick="showSection('schoollife',this)">📚 학교생활</button>
+      <div class="nav-dropdown">
+        <button onclick="showSection('schoollife',this)">전체 보기</button>
+        <button onclick="showSection('schoollife',this);scrollToSchool('awards')">🏆 대회·수상</button>
+        <button onclick="showSection('schoollife',this);scrollToSchool('club')">🏫 동아리</button>
+        <button onclick="showSection('schoollife',this);scrollToSchool('volunteer')">❤️ 봉사</button>
+        <button onclick="showSection('schoollife',this);scrollToSchool('sespec')">📝 세특</button>
+      </div>
+    </div>
+
+    <!-- 자소서 & 독서 -->
+    <div class="nav-group">
+      <button class="nav-tab" onclick="showSection('essay',this)">✍️ 자소서</button>
+      <div class="nav-dropdown">
+        <button onclick="showSection('essay',this)">자기소개서 5항목</button>
+        <button onclick="showSection('books',this)">독서 기록</button>
+      </div>
+    </div>
+
+    <!-- 면접 준비 -->
+    <div class="nav-group">
+      <button class="nav-tab" onclick="showSection('interview',this)">🎤 면접 준비</button>
+      <div class="nav-dropdown">
+        <button onclick="showSection('interview',this)">예상 질문 연습</button>
+      </div>
+    </div>
+
+    <!-- 합격 분석 -->
+    <div class="nav-group">
+      <button class="nav-tab" onclick="showSection('analysis',this)">🎯 합격 분석</button>
+      <div class="nav-dropdown">
+        <button onclick="showSection('analysis',this)">종합 AI 분석</button>
+      </div>
+    </div>
+
+    <!-- 시사 -->
+    <div class="nav-group">
+      <button class="nav-tab" onclick="showSection('news',this)">📰 시사</button>
+      <div class="nav-dropdown">
+        <button onclick="showSection('news',this)">뉴스 & AI 요약</button>
+      </div>
+    </div>
+
+    <!-- 전략 -->
+    <div class="nav-group">
+      <button class="nav-tab" onclick="showSection('strategy',this)">📋 전략</button>
+      <div class="nav-dropdown">
+        <button onclick="showSection('strategy',this)">전형 정보</button>
+        <button onclick="showSection('strategy',this)">나만의 전략 메모</button>
+      </div>
+    </div>
+
+  </div>
+  <button onclick="openLogin()" class="login-btn">🔒 로그인</button>
+  <button class="nav-hamburger" onclick="toggleMobileMenu()" id="hamburger-btn">☰</button>
+</nav>
+
+<!-- 모바일 전체 메뉴 -->
+<div class="nav-mobile-menu" id="mobile-menu">
+  <div class="mobile-cat">🏠 홈</div>
+  <button onclick="showSection('dashboard',this);closeMobileMenu()">대시보드</button>
+  <button onclick="showSection('checklist',this);closeMobileMenu()">일정 체크리스트</button>
+  <div class="mobile-cat">📊 성적 관리</div>
+  <button onclick="showSection('grades',this);closeMobileMenu()">학기별 성취도</button>
+  <div class="mobile-cat">📚 학교생활</div>
+  <button onclick="showSection('schoollife',this);closeMobileMenu()">전체 보기</button>
+  <button onclick="showSection('schoollife',this);scrollToSchool('awards');closeMobileMenu()">🏆 대회·수상</button>
+  <button onclick="showSection('schoollife',this);scrollToSchool('club');closeMobileMenu()">🏫 동아리</button>
+  <button onclick="showSection('schoollife',this);scrollToSchool('volunteer');closeMobileMenu()">❤️ 봉사</button>
+  <button onclick="showSection('schoollife',this);scrollToSchool('sespec');closeMobileMenu()">📝 세특</button>
+  <div class="mobile-cat">✍️ 자소서</div>
+  <button onclick="showSection('essay',this);closeMobileMenu()">자기소개서 5항목</button>
+  <button onclick="showSection('books',this);closeMobileMenu()">독서 기록</button>
+  <div class="mobile-cat">🎤 면접 준비</div>
+  <button onclick="showSection('interview',this);closeMobileMenu()">예상 질문 연습</button>
+  <div class="mobile-cat">🎯 합격 분석</div>
+  <button onclick="showSection('analysis',this);closeMobileMenu()">종합 AI 분석</button>
+  <div class="mobile-cat">📰 시사</div>
+  <button onclick="showSection('news',this);closeMobileMenu()">뉴스 & AI 요약</button>
+  <div class="mobile-cat">📋 전략</div>
+  <button onclick="showSection('strategy',this);closeMobileMenu()">전형 정보 & 전략 메모</button>
+</div>
+
+<main>
+
+<!-- ════════════ DASHBOARD ════════════ -->
+<section class="section active" id="dashboard">
+  <div class="page-header">
+    <div>
+      <div class="page-title">안녕하세요, <span>민사고를 향해</span> 달려가고 있어요</div>
+      <div class="page-subtitle" id="today-date"></div>
+    </div>
+  </div>
+
+  <div class="grid-3" style="margin-bottom:16px">
+    <div class="card dday-card">
+      <div class="card-title">원서접수까지</div>
+      <div class="stat-big" id="dday-count">—</div>
+      <div class="stat-label">일 남음</div>
+      <input type="date" id="dday-input" onchange="onDdayChange(this.value)"
+        style="margin-top:10px;background:transparent;border:1px solid rgba(200,169,110,0.3);color:var(--muted);font-size:11px;padding:4px 8px;border-radius:6px;width:100%;outline:none;cursor:pointer">
+    </div>
+    <div class="card">
+      <div class="card-title">체크리스트 완료</div>
+      <div class="stat-big" id="cl-done-count">0</div>
+      <div class="stat-label">/ <span id="cl-total-count">0</span> 항목</div>
+      <div class="progress-wrap" style="margin-top:14px">
+        <div class="progress-bar"><div class="progress-fill" id="cl-progress" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">자소서 완성도</div>
+      <div class="stat-big" id="essay-pct">0%</div>
+      <div class="stat-label">작성 중</div>
+    </div>
+  </div>
+
+  <!-- 합격 확률 요약 카드 -->
+  <div class="grid-2" style="margin-bottom:16px">
+    <div class="card" id="dash-prob-card" style="border-color:rgba(200,169,110,0.2);display:none">
+      <div class="card-title">🎯 최근 합격 가능성 분석</div>
+      <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:12px">
+        <div>
+          <span class="stat-big" id="dash-prob-num" style="font-size:36px">0</span>
+          <span style="font-size:18px;color:var(--accent);font-weight:600">%</span>
+        </div>
+        <div>
+          <div id="dash-prob-label" style="font-size:13px;font-weight:500;margin-bottom:2px"></div>
+          <div id="dash-prob-date" style="font-size:11px;color:var(--muted)"></div>
+        </div>
+      </div>
+      <div style="height:7px;background:var(--surface2);border-radius:99px;overflow:hidden">
+        <div id="dash-prob-bar" style="height:100%;width:0%;border-radius:99px;transition:width 1s cubic-bezier(.4,0,.2,1)"></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:10px">성적 탭에서 다시 분석할 수 있어요</div>
+    </div>
+    <div class="card" id="dash-prob-empty" style="border-color:rgba(200,169,110,0.1);border-style:dashed">
+      <div class="card-title">🎯 합격 가능성 분석</div>
+      <div style="font-size:13px;color:var(--muted);padding:8px 0">아직 분석 결과가 없어요.<br>성적 탭에서 성적과 스펙을 입력 후 분석해보세요!</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+        오늘의 할 일
+        <button onclick="openAddTask()" style="background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.3);color:var(--accent);font-size:11px;padding:3px 10px;border-radius:6px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">+ 추가</button>
+      </div>
+      <div id="dash-tasks"></div>
+
+      <!-- 할 일 추가 폼 -->
+      <div id="add-task-form" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+        <input id="new-task-text" type="text" placeholder="할 일 내용 입력..."
+          style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:13px;padding:8px 12px;border-radius:8px;outline:none;margin-bottom:8px"
+          onkeydown="if(event.key==='Enter')confirmAddTask()">
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          <button onclick="setNewTag('tag-red','긴급')"   class="tag-sel-btn tag-red-sel">긴급</button>
+          <button onclick="setNewTag('tag-gold','중요')"  class="tag-sel-btn tag-gold-sel">중요</button>
+          <button onclick="setNewTag('tag-blue','면접')"  class="tag-sel-btn tag-blue-sel">면접</button>
+          <button onclick="setNewTag('tag-green','성적')" class="tag-sel-btn tag-green-sel">성적</button>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button onclick="confirmAddTask()" style="flex:1;background:var(--accent);border:none;color:#0a0c10;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:700;padding:7px;border-radius:7px;cursor:pointer">추가</button>
+          <button onclick="closeAddTask()"  style="flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:7px;border-radius:7px;cursor:pointer">취소</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">다가오는 주요 일정</div>
+      <div class="task-row">
+        <div style="flex:1">
+          <div style="font-size:14px;margin-bottom:2px">원서접수</div>
+          <div style="font-size:12px;color:var(--muted)">2026년 12월 초 (작년: 12월 8~11일)</div>
+        </div>
+        <span class="task-tag tag-red">D-?</span>
+        <a class="gcal-btn" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=%EB%AF%BC%EC%82%AC%EA%B3%A0+%EC%9B%90%EC%84%9C%EC%A0%91%EC%88%98&dates=20261208/20261212&details=%EB%AF%BC%EC%A1%B1%EC%82%AC%EA%B3%A0%EB%93%B1%ED%95%99%EA%B5%90+%EC%9B%90%EC%84%9C%EC%A0%91%EC%88%98+%EA%B8%B0%EA%B0%84+(%EC%9E%91%EB%85%84+%EA%B8%B0%EC%A4%80+12%2F8~11%EC%9D%BC%2C+%EA%B3%B5%EC%8B%9D+%EC%9D%BC%EC%A0%95+%ED%99%95%EC%9D%B8+%ED%95%84%EC%9A%94)" target="_blank" rel="noopener">📅 캘린더</a>
+      </div>
+      <div class="task-row">
+        <div style="flex:1">
+          <div style="font-size:14px;margin-bottom:2px">면접대상자 발표</div>
+          <div style="font-size:12px;color:var(--muted)">2026년 12월 중 (작년: 12월 18일)</div>
+        </div>
+        <span class="task-tag tag-gold">D-?</span>
+        <a class="gcal-btn" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=%EB%AF%BC%EC%82%AC%EA%B3%A0+%EB%A9%B4%EC%A0%91%EB%8C%80%EC%83%81%EC%9E%90+%EB%B0%9C%ED%91%9C&dates=20261218/20261219&details=%EB%AF%BC%EC%A1%B1%EC%82%AC%EA%B3%A0%EB%93%B1%ED%95%99%EA%B5%90+%EB%A9%B4%EC%A0%91%EB%8C%80%EC%83%81%EC%9E%90+%EB%B0%9C%ED%91%9C%EC%9D%BC+(%EC%9E%91%EB%85%84+%EA%B8%B0%EC%A4%80%2C+%EA%B3%B5%EC%8B%9D+%EC%9D%BC%EC%A0%95+%ED%99%95%EC%9D%B8+%ED%95%84%EC%9A%94)" target="_blank" rel="noopener">📅 캘린더</a>
+      </div>
+      <div class="task-row">
+        <div style="flex:1">
+          <div style="font-size:14px;margin-bottom:2px">면접 & 체력검사</div>
+          <div style="font-size:12px;color:var(--muted)">2026년 12월 중 (작년: 12월 22~23일)</div>
+        </div>
+        <span class="task-tag tag-blue">예정</span>
+        <a class="gcal-btn" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=%EB%AF%BC%EC%82%AC%EA%B3%A0+%EB%A9%B4%EC%A0%91+%26+%EC%B2%B4%EB%A0%A5%EA%B2%80%EC%82%AC&dates=20261222/20261224&details=%EB%AF%BC%EC%A1%B1%EC%82%AC%EA%B3%A0%EB%93%B1%ED%95%99%EA%B5%90+%EB%A9%B4%EC%A0%91+%EB%B0%8F+%EC%B2%B4%EB%A0%A5%EA%B2%80%EC%82%AC+(%EC%9E%91%EB%85%84+%EA%B8%B0%EC%A4%80+12%2F22~23%EC%9D%BC%2C+%EA%B3%B5%EC%8B%9D+%EC%9D%BC%EC%A0%95+%ED%99%95%EC%9D%B8+%ED%95%84%EC%9A%94)" target="_blank" rel="noopener">📅 캘린더</a>
+      </div>
+      <div class="task-row">
+        <div style="flex:1">
+          <div style="font-size:14px;margin-bottom:2px">최종 합격 발표</div>
+          <div style="font-size:12px;color:var(--muted)">2026년 12월 말 (작년: 12월 31일)</div>
+        </div>
+        <span class="task-tag tag-green">목표</span>
+        <a class="gcal-btn" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=%EB%AF%BC%EC%82%AC%EA%B3%A0+%EC%B5%9C%EC%A2%85%ED%95%A9%EA%B2%A9+%EB%B0%9C%ED%91%9C&dates=20261231/20270101&details=%EB%AF%BC%EC%A1%B1%EC%82%AC%EA%B3%A0%EB%93%B1%ED%95%99%EA%B5%90+%EC%B5%9C%EC%A2%85%ED%95%A9%EA%B2%A9%EC%9E%90+%EB%B0%9C%ED%91%9C%EC%9D%BC+(%EC%9E%91%EB%85%84+%EA%B8%B0%EC%A4%80+12%2F31%2C+%EA%B3%B5%EC%8B%9D+%EC%9D%BC%EC%A0%95+%ED%99%95%EC%9D%B8+%ED%95%84%EC%9A%94)" target="_blank" rel="noopener">📅 캘린더</a>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:10px">※ 정확한 일정은 민사고 공식 홈페이지에서 확인하세요</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ CHECKLIST ════════════ -->
+<section class="section" id="checklist">
+  <div class="page-header">
+    <div>
+      <div class="page-title">입시 <span>체크리스트</span></div>
+      <div class="page-subtitle">항목을 클릭해서 완료 처리하세요</div>
+    </div>
+    <div id="cl-header-progress" style="font-size:13px;color:var(--muted)"></div>
+  </div>
+
+  <div class="card">
+    <!-- 항목 추가 폼 -->
+    <div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border)">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:500">+ 새 항목 추가</div>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input id="cl-new-name" type="text" placeholder="항목 이름"
+          style="flex:2;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:13px;padding:8px 12px;border-radius:8px;outline:none"
+          onkeydown="if(event.key==='Enter')document.getElementById('cl-new-desc').focus()">
+        <input id="cl-new-desc" type="text" placeholder="설명 (선택)"
+          style="flex:3;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:13px;padding:8px 12px;border-radius:8px;outline:none"
+          onkeydown="if(event.key==='Enter')confirmAddCL()">
+      </div>
+      <div style="display:flex;gap:8px">
+        <select id="cl-new-cat"
+          style="flex:2;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:13px;padding:8px 12px;border-radius:8px;outline:none">
+        </select>
+        <select id="cl-new-pri"
+          style="flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:13px;padding:8px 12px;border-radius:8px;outline:none">
+          <option value="tag-red|필수">필수</option>
+          <option value="tag-gold|중요" selected>중요</option>
+          <option value="tag-blue|권장">권장</option>
+        </select>
+        <button onclick="confirmAddCL()"
+          style="flex:1;background:var(--accent);border:none;color:#0a0c10;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;padding:8px;border-radius:8px;cursor:pointer">추가</button>
+        <button onclick="showAddCatForm()"
+          style="flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Noto Sans KR',sans-serif;font-size:13px;padding:8px;border-radius:8px;cursor:pointer">+ 카테고리</button>
+      </div>
+      <!-- 카테고리 추가 폼 -->
+      <div id="cl-cat-form" style="display:none;margin-top:10px;display:none;gap:8px">
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <input id="cl-new-cat-name" type="text" placeholder="카테고리 이름 (예: 🏆 수상 준비)"
+            style="flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:13px;padding:8px 12px;border-radius:8px;outline:none"
+            onkeydown="if(event.key==='Enter')confirmAddCat()">
+          <button onclick="confirmAddCat()"
+            style="background:var(--accent);border:none;color:#0a0c10;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;padding:8px 16px;border-radius:8px;cursor:pointer">추가</button>
+          <button onclick="document.getElementById('cl-cat-form').style.display='none'"
+            style="background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Noto Sans KR',sans-serif;font-size:13px;padding:8px 16px;border-radius:8px;cursor:pointer">취소</button>
+        </div>
+      </div>
+    </div>
+    <div id="cl-body"></div>
+  </div>
+</section>
+<section class="section" id="grades">
+  <div class="page-header">
+    <div>
+      <div class="page-title">성적 & <span>스펙 관리</span></div>
+      <div class="page-subtitle">성취도와 학기별 비중으로 실제 전형 점수를 계산해요</div>
+    </div>
+  </div>
+
+  <!-- 생기부 업로드 (PDF + 이미지, 다중 파일) -->
+  <div class="card" style="margin-bottom:16px;border-color:rgba(110,168,200,0.25)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <div class="card-title" style="margin-bottom:0">📄 생활기록부 업로드 → AI 자동 분석</div>
+      <span style="font-size:11px;color:var(--muted)">파일은 서버에 저장되지 않아요</span>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px">
+      PDF·사진을 여러 장 올릴 수 있어요. Claude AI가 <strong style="color:var(--text)">교과 성취도·학기별 성적·세특 내용</strong>을 읽어 자동으로 채워줘요.
+    </div>
+
+    <!-- 드롭존 -->
+    <div id="upload-drop-zone"
+      style="border:2px dashed var(--border);border-radius:12px;padding:28px;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:12px"
+      onclick="document.getElementById('upload-file-input').click()"
+      ondragover="event.preventDefault();this.style.borderColor='var(--accent)';this.style.background='rgba(200,169,110,0.04)'"
+      ondragleave="this.style.borderColor='var(--border)';this.style.background=''"
+      ondrop="handleFileDrop(event)">
+      <div style="font-size:28px;margin-bottom:8px">📂</div>
+      <div style="font-size:14px;color:var(--text);margin-bottom:4px">클릭하거나 파일을 여기로 드래그하세요</div>
+      <div style="font-size:12px;color:var(--muted)">PDF · JPG · PNG · WEBP — 여러 파일 동시 선택 가능 (각 최대 10MB)</div>
+      <input type="file" id="upload-file-input" accept=".pdf,.jpg,.jpeg,.png,.webp" multiple style="display:none" onchange="handleFileSelect(this)">
+    </div>
+
+    <!-- 업로드된 파일 목록 -->
+    <div id="file-list-wrap" style="display:none;margin-bottom:12px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+        <span>업로드된 파일</span>
+        <button onclick="clearAllFiles()" style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;padding:2px 6px;border-radius:4px" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--muted)'">전체 삭제</button>
+      </div>
+      <div id="file-list"></div>
+    </div>
+
+    <div id="pdf-status" style="display:none;margin-bottom:12px;padding:12px 16px;border-radius:8px;font-size:13px"></div>
+
+    <div id="pdf-analyze-wrap" style="display:none">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <button onclick="analyzeFile('grades')" id="pdf-analyze-btn"
+          style="background:rgba(110,168,200,0.15);border:1px solid rgba(110,168,200,0.3);color:var(--info);font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;padding:8px 18px;border-radius:8px;cursor:pointer">
+          ✨ 성적 자동 분석
+        </button>
+        <button onclick="analyzeFile('sespec')" id="sespec-analyze-btn"
+          style="background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.3);color:var(--accent);font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;padding:8px 18px;border-radius:8px;cursor:pointer">
+          ✨ 세특 자동 분석
+        </button>
+        <button onclick="analyzeFile('both')" id="both-analyze-btn"
+          style="background:rgba(110,200,154,0.12);border:1px solid rgba(110,200,154,0.3);color:var(--success);font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;padding:8px 18px;border-radius:8px;cursor:pointer">
+          ✨ 성적 + 세특 한번에
+        </button>
+        <span id="pdf-timer" style="font-size:11px;color:var(--muted)"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">교과 성적 입력 <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:6px">국·영·수 2배 가중 / 나머지 1배</span></div>
+
+      <!-- 학기 탭 -->
+      <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap">
+        <button class="sem-tab active" onclick="showSem(0,this)">중2-1학기 <span style="font-size:10px;opacity:0.7">(20%)</span></button>
+        <button class="sem-tab" onclick="showSem(1,this)">중2-2학기 <span style="font-size:10px;opacity:0.7">(20%)</span></button>
+        <button class="sem-tab" onclick="showSem(2,this)">중3-1학기 <span style="font-size:10px;opacity:0.7">(30%)</span></button>
+        <button class="sem-tab" onclick="showSem(3,this)">중3-2학기 <span style="font-size:10px;opacity:0.7">(30%)</span></button>
+      </div>
+
+      <div id="sem-panels">
+      </div>
+
+      <hr class="divider">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:13px;color:var(--muted)">환산 총점 (40점 만점)</span>
+        <span style="font-size:22px;font-weight:700;color:var(--accent)" id="total-score">-</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);padding:10px;background:var(--surface2);border-radius:8px;line-height:1.7">
+        A=40점 · B=20점 · C=10점 · D=5점 · E=0점<br>
+        국·영·수 2배 가중 · 사회(역사) · 과학 · 체육 · 음악/미술 1배<br>
+        <span style="color:var(--danger)">⚠ B 하나가 A 대비 20점 차이 — 국·영·수 올A가 절대적으로 중요</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">출결 현황 <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:6px">미인정 결석 × 0.2점 감점</span></div>
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px">
+          <div style="flex:1">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:4px">미인정 결석 (일)</div>
+            <input id="absent-days" type="number" min="0" placeholder="0" oninput="calcAbsent()"
+              style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:7px 12px;border-radius:8px;outline:none">
+          </div>
+          <div style="flex:1">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:4px">지각·조퇴·결과 (회)</div>
+            <input id="late-count" type="number" min="0" placeholder="0" oninput="calcAbsent()"
+              style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:7px 12px;border-radius:8px;outline:none">
+          </div>
+        </div>
+        <div id="absent-result" style="font-size:12px;padding:8px 12px;background:var(--surface2);border-radius:7px;color:var(--muted)">
+          출결 감점: 계산 중...
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px">지각·조퇴·결과 3회 = 결석 1일 환산 · 합산 2회 이하 감점 없음</div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">스펙 & 수상</div>
+        <textarea id="spec-memo" class="essay-textarea" style="min-height:130px" oninput="saveGrades()" placeholder="수상 실적, 동아리, 봉사 활동, 대회 참가 이력 등을 자유롭게 기록하세요.
+
+예시:
+- KMO 한국수학올림피아드 학교 대표
+- 과학 탐구 발표대회 금상
+- 독서 토론 동아리 부장 (주도적 기획·운영)
+- 환경 봉사 120시간 (지속적 이타심)"></textarea>
+      </div>
+      <div class="card">
+        <div class="card-title">민사고 성적 반영 기준</div>
+        <ul class="info-list">
+          <li>반영 과목 7개: 국어·수학·영어(2배) + 사회/역사(택1)·과학·체육·음악/미술(택1)(1배)</li>
+          <li>2025년부터 도덕·기술가정·정보·선택과목 제외</li>
+          <li>중3 성적이 전체의 60% — 중3 올A가 결정적</li>
+          <li>동점자: 최근 학기 성적 → 우수 교과 개수 → 미인정 결석 순</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 합격 확률 분석 -->
+  <div class="card" style="margin-top:16px;border-color:rgba(200,169,110,0.25)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div class="card-title" style="margin-bottom:0">🎯 합격 가능성 AI 분석</div>
+      <button onclick="analyzeAdmission()" id="analyze-btn"
+        style="background:var(--accent);border:none;color:#0a0c10;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:700;padding:6px 16px;border-radius:7px;cursor:pointer">
+        분석 시작
+      </button>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px">성적과 스펙을 입력한 후 분석 버튼을 눌러주세요. 참고용이며 실제 합격 여부와 다를 수 있어요.</div>
+    <div id="analyze-result" style="display:none">
+      <div style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px">
+          <div>
+            <span style="font-family:'Noto Serif KR',serif;font-size:36px;font-weight:700;color:var(--accent)" id="prob-number">0</span>
+            <span style="font-size:18px;color:var(--accent);font-weight:600">%</span>
+            <span style="font-size:13px;color:var(--muted);margin-left:8px" id="prob-label"></span>
+          </div>
+          <span id="analyze-timer" style="font-size:11px;color:var(--muted)"></span>
+        </div>
+        <div style="height:10px;background:var(--surface2);border-radius:99px;overflow:hidden">
+          <div id="prob-bar" style="height:100%;width:0%;border-radius:99px;transition:width 1s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,var(--accent),var(--accent2))"></div>
+        </div>
+      </div>
+      <div id="analyze-text" style="font-size:13px;line-height:1.9;color:var(--text)"></div>
+    </div>
+  </div>
+
+  </div>
+</section>
+
+<!-- ════════════ ESSAY ════════════ -->
+<section class="section" id="essay">
+  <div class="page-header">
+    <div>
+      <div class="page-title">자기소개서 <span>작성</span></div>
+      <div class="page-subtitle">실제 민사고 자소서 5개 항목 — 독서 소감이 변별력 핵심</div>
+    </div>
+  </div>
+
+  <div style="padding:10px 14px;background:rgba(224,96,96,0.08);border:1px solid rgba(224,96,96,0.2);border-radius:8px;font-size:12px;color:var(--danger);margin-bottom:20px;line-height:1.7">
+    ⚠️ <strong>기재 금지 항목</strong>: 공인어학성적(TOEFL·TEPS 등) · 교외 수상 실적 · 논문 · 해외활동 실적 · 도서 출간 — 위반 시 0점 처리
+  </div>
+
+  <div id="essay-tabs" style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap">
+    <button class="btn" onclick="showEssay(0,this)">교과학습</button>
+    <button class="btn btn-ghost" onclick="showEssay(1,this)">교과 외 활동</button>
+    <button class="btn btn-ghost" onclick="showEssay(2,this)">소질·적성</button>
+    <button class="btn btn-ghost" onclick="showEssay(3,this)">진로·도전계획</button>
+    <button class="btn btn-ghost" onclick="showEssay(4,this)">📚 독서 소감 ★</button>
+  </div>
+
+  <div id="essay-panels">
+    <div class="essay-panel" id="ep0">
+      <div class="card">
+        <div class="essay-prompt">
+          <strong style="color:var(--accent)">항목 1. 교과학습활동</strong><br>
+          가장 노력을 기울인 교과학습과 그 과정에서 배운 점을 구체적으로 서술하세요. <span style="color:var(--muted);font-size:12px">(약 300자)</span>
+        </div>
+        <textarea class="essay-textarea" id="ea0" placeholder="단순히 '열심히 공부했다'가 아니라, 어떤 개념이 어려웠고 어떻게 극복했는지, 그 과정에서 무엇을 깨달았는지를 구체적으로 써주세요.
+
+예: '수학에서 함수 단원이 어려웠는데, 실생활 사례를 직접 찾아 노트에 정리하며 이해했고, 이 과정에서 개념을 스스로 연결하는 힘을 키웠습니다.'" oninput="updateEssayCount(0)"></textarea>
+        <div class="essay-meta">
+          <div class="char-count">현재 <span id="ec0">0</span>자 / 권장 300자</div>
+          <span style="font-size:11px;color:var(--success)">✓ 자동저장</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="essay-panel" id="ep1" style="display:none">
+      <div class="card">
+        <div class="essay-prompt">
+          <strong style="color:var(--accent)">항목 2. 교과 외 활동</strong><br>
+          가장 의미 있었던 비교과 경험과 그 의미를 서술하세요. <span style="color:var(--muted);font-size:12px">(약 300자)</span>
+        </div>
+        <textarea class="essay-textarea" id="ea1" placeholder="동아리·봉사·탐구 활동 중 가장 주도적으로 참여한 경험을 써주세요. 단순 참여가 아니라 '기획·발표·실험 설계 등 주도적 역할'이 드러나야 해요.
+
+민사고의 건학이념인 '촛불 정신(이타심)'에 부합하는 봉사 경험이 있다면 강조하세요." oninput="updateEssayCount(1)"></textarea>
+        <div class="essay-meta">
+          <div class="char-count">현재 <span id="ec1">0</span>자 / 권장 300자</div>
+          <span style="font-size:11px;color:var(--success)">✓ 자동저장</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="essay-panel" id="ep2" style="display:none">
+      <div class="card">
+        <div class="essay-prompt">
+          <strong style="color:var(--accent)">항목 3. 소질과 적성</strong><br>
+          자신의 강점과 역량을 서술하세요. <span style="color:var(--muted);font-size:12px">(약 300자)</span>
+        </div>
+        <textarea class="essay-textarea" id="ea2" placeholder="'공부를 잘한다'는 어필은 효과가 없어요. 지원자 전원이 전교권이기 때문이에요.
+대신 남들이 갖지 않은 독특한 관심사와 전문성을 써주세요.
+
+민사고 합격자들 사이에서 'XX 천재'로 불릴 만한 분야가 있다면 그걸 중심으로 써보세요." oninput="updateEssayCount(2)"></textarea>
+        <div class="essay-meta">
+          <div class="char-count">현재 <span id="ec2">0</span>자 / 권장 300자</div>
+          <span style="font-size:11px;color:var(--success)">✓ 자동저장</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="essay-panel" id="ep3" style="display:none">
+      <div class="card">
+        <div class="essay-prompt">
+          <strong style="color:var(--accent)">항목 4. 진로 희망과 도전 계획</strong><br>
+          민사고에서의 구체적인 계획을 서술하세요. <span style="color:var(--muted);font-size:12px">(약 300자)</span>
+        </div>
+        <textarea class="essay-textarea" id="ea3" placeholder="'좋은 대학에 가고 싶다'보다는 민사고의 구체적인 프로그램(무학년 선택 수업, 영어 몰입교육, AP과정, 동아리 등)과 자신의 진로를 연결해서 써주세요.
+
+왜 민사고여야 하는지, 민사고에서 무엇을 배워 어떤 사람이 될 것인지를 설득력 있게 표현하세요." oninput="updateEssayCount(3)"></textarea>
+        <div class="essay-meta">
+          <div class="char-count">현재 <span id="ec3">0</span>자 / 권장 300자</div>
+          <span style="font-size:11px;color:var(--success)">✓ 자동저장</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="essay-panel" id="ep4" style="display:none">
+      <div class="card">
+        <div style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.25);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:12px;line-height:1.8;color:var(--text)">
+          ⭐ <strong style="color:var(--accent)">독서 소감이 가장 큰 변별력!</strong> 영어 도서 포함 3권의 소감을 씁니다.<br>
+          단순 감상·지식 나열 ❌ → <strong>독서를 통한 생각의 변화와 실질적 발전</strong> ✅<br>
+          면접에서 해당 책에 대한 꼬리질문이 나오므로, <strong>자신 있게 설명할 수 있는 책</strong>을 고르세요.
+        </div>
+        <div class="essay-prompt">
+          <strong style="color:var(--accent)">항목 5. 독서 소감</strong><br>
+          영어 도서 포함 3권의 독서 소감을 서술하세요. <span style="color:var(--muted);font-size:12px">(권당 약 300자)</span>
+        </div>
+        <textarea class="essay-textarea" id="ea4" style="min-height:280px" placeholder="[책 1 — 국문 도서]
+제목:
+소감: 이 책이 나에게 어떤 영향을 미쳤는지, 생각이 어떻게 바뀌었는지 중심으로.
+
+[책 2 — 국문 도서]
+제목:
+소감:
+
+[책 3 — 영어 도서 ★필수]
+제목 (English):
+소감: 영어로 읽으면서 얻은 내용과 생각의 변화를 중심으로." oninput="updateEssayCount(4)"></textarea>
+        <div class="essay-meta">
+          <div class="char-count">현재 <span id="ec4">0</span>자 / 권장 900자 (3권 × 300자)</div>
+          <span style="font-size:11px;color:var(--success)">✓ 자동저장</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ INTERVIEW ════════════ -->
+<section class="section" id="interview">
+  <div class="page-header">
+    <div>
+      <div class="page-title">면접 <span>예상 질문</span> 연습</div>
+      <div class="page-subtitle">2025학년도부터 서류 기반 개별면접 — 꼬리질문 대비가 핵심</div>
+    </div>
+  </div>
+
+  <div style="padding:10px 14px;background:rgba(110,168,200,0.08);border:1px solid rgba(110,168,200,0.2);border-radius:8px;font-size:12px;color:var(--info);margin-bottom:20px;line-height:1.8">
+    📌 <strong>현행 면접 방식 (2025학년도~)</strong>: 자소서·학생부 기반 개별면접 · 공통 문항 없이 개인별 맞춤 질문 · 꼬리질문 다수 · 중학교 수학·과학 교과 개념 질문 일부 포함 · 영어 질문은 면접관에 따라 있을 수도 없을 수도 있음<br>
+    🏃 <strong>체력검사</strong>: 셔틀런(왕복 오래달리기) — 남자 <strong>40회</strong> / 여자 <strong>23회</strong> 기준 (감점제, 동점자 탈락 가능)
+  </div>
+
+  <div class="grid-2">
+    <div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px;font-weight:500">📌 자기주도학습 — 학습 과정 & 지원동기</div>
+      <div class="q-card" onclick="toggleQ(this, event)">
+        <div class="q-number">Q 01</div>
+        <div class="q-text">자기소개서에 쓴 탐구 활동 중 가장 깊이 파고든 것을 설명해보세요.</div>
+        <div class="q-answer">
+          <textarea class="answer-area" placeholder="세특이나 자소서에 기재한 탐구 주제의 기본 원리를 정확히 설명할 수 있어야 해요. 면접관이 '왜?'를 3단계 깊이까지 물어볼 수 있어요."></textarea>
+          <div class="q-tip">💡 수업 내용 → 흥미 발견 → 추가 탐구 → 깨달음 순서로 설명하면 자기주도학습의 근거가 돼요.</div>
+        </div>
+      </div>
+      <div class="q-card" onclick="toggleQ(this, event)">
+        <div class="q-number">Q 02</div>
+        <div class="q-text">민사고에 지원한 진짜 이유가 무엇인가요?</div>
+        <div class="q-answer">
+          <textarea class="answer-area" placeholder="'좋은 대학' 말고, 민사고의 무학년 선택 수업·영어 몰입·AP과정 등 구체적 프로그램과 자신의 목표를 연결해서 답해보세요."></textarea>
+          <div class="q-tip">💡 민사고 교훈·교육 목표를 미리 숙지하고, 자신의 가치관과 연결 지으면 강한 인상을 남길 수 있어요.</div>
+        </div>
+      </div>
+      <div class="q-card" onclick="toggleQ(this, event)">
+        <div class="q-number">Q 03</div>
+        <div class="q-text">10년 후 어떤 사람이 되고 싶은지, 민사고가 그 과정에서 어떤 역할을 하나요?</div>
+        <div class="q-answer">
+          <textarea class="answer-area" placeholder="단순 직업보다 '어떤 가치를 만들고 싶은가'를 중심으로, 민사고에서의 구체적인 성장 계획과 연결해 말해보세요."></textarea>
+          <div class="q-tip">💡 진로계획이 구체적일수록 설득력이 높아져요.</div>
+        </div>
+      </div>
+      <div style="font-size:13px;color:var(--muted);margin-top:20px;margin-bottom:12px;font-weight:500">📌 인성 — 배려·나눔·협력·존중</div>
+      <div class="q-card" onclick="toggleQ(this, event)">
+        <div class="q-number">Q 04</div>
+        <div class="q-text">면접까지 온 것을 보면 학교가 당신의 무엇을 높이 평가했다고 생각하나요?</div>
+        <div class="q-answer">
+          <textarea class="answer-area" placeholder="자신을 객관적으로 보여주는 질문이에요. 자소서와 생기부에서 실제로 드러나는 강점을 솔직하게 말해보세요."></textarea>
+          <div class="q-tip">💡 과거 기출 질문이에요. 겸손하되 자신의 강점을 분명히 표현하는 균형이 중요해요.</div>
+        </div>
+      </div>
+      <div class="q-card" onclick="toggleQ(this, event)">
+        <div class="q-number">Q 05</div>
+        <div class="q-text">봉사활동이나 단체 활동에서 갈등을 해결한 경험이 있나요?</div>
+        <div class="q-answer">
+          <textarea class="answer-area" placeholder="민사고의 '촛불 정신(자기희생으로 세상을 밝게 함)'에 부합하는 이타심과 협력 경험을 구체적으로 말해보세요."></textarea>
+          <div class="q-tip">💡 민사고 관계자는 '내신보다 이타심과 봉사정신이 드러난 원서가 기본'이라고 강조해요.</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px;font-weight:500">📌 교과 개념 — 수학·과학 꼬리질문 대비</div>
+      <div class="q-card" onclick="toggleQ(this, event)">
+        <div class="q-number">Q 06</div>
+        <div class="q-text">[수학] 1부터 n까지 자연수 중 3의 배수와 7의 배수를 제외한 25번째 수는?</div>
+        <div class="q-answer">
+          <textarea class="answer-area" placeholder="과거 기출 수학 문제예요. 풀이 과정을 논리적으로 설명해보세요. 모를 땐 솔직히 인정하되 추론 과정을 보여주는 것이 중요해요."></textarea>
+          <div class="q-tip">💡 정답보다 논리적 추론 과정을 보여주는 게 더 중요해요. 막혀도 포기하지 말고 생각하는 과정을 말해보세요.</div>
+        </div>
+      </div>
+      <div class="q-card" onclick="toggleQ(this, event)">
+        <div class="q-number">Q 07</div>
+        <div class="q-text">세특에 기재된 탐구 주제의 핵심 원리를 설명해보세요. (꼬리질문 대비 연습)</div>
+        <div class="q-answer">
+          <textarea class="answer-area" placeholder="자신의 세특에 실제로 쓴 탐구 주제를 입력하고, 그 원리를 3단계 깊이까지 설명하는 연습을 해보세요.
+
+예: '피타고라스 정리를 활용한 건축 구조 탐구'라면 → 피타고라스 정리 증명 → 실제 적용 사례 → 한계와 확장까지."></textarea>
+          <div class="q-tip">💡 면접에서 가장 자주 나오는 유형이에요. 자소서에 쓴 모든 내용에 '왜?'를 3번 물었을 때 답할 수 있어야 해요.</div>
+        </div>
+      </div>
+      <div style="font-size:13px;color:var(--muted);margin-top:20px;margin-bottom:12px;font-weight:500">📌 독서 & 영어 대비</div>
+      <div class="q-card" onclick="toggleQ(this, event)">
+        <div class="q-number">Q 08</div>
+        <div class="q-text">자소서에 쓴 책 중 가장 생각이 많이 바뀐 책은 무엇이고, 왜 그랬나요?</div>
+        <div class="q-answer">
+          <textarea class="answer-area" placeholder="자소서 독서 항목에 기재한 책에 대한 꼬리질문이 반드시 나와요. 책의 줄거리 요약이 아니라 '내 생각이 어떻게 달라졌는가'를 중심으로 말해보세요."></textarea>
+          <div class="q-tip">💡 독서 소감은 변별력이 가장 크다고 보고서에도 명시돼 있어요. 자신 있게 설명할 수 있는 책을 고르세요.</div>
+        </div>
+      </div>
+      <div class="q-card" onclick="toggleQ(this, event)">
+        <div class="q-number">Q 09</div>
+        <div class="q-text">[영어] What is the most important problem in our society today, and why?</div>
+        <div class="q-answer">
+          <textarea class="answer-area" placeholder="영어 면접 대비 연습이에요. 면접관에 따라 영어 질문이 나올 수 있어요.
+영어로 자신의 의견을 논리적으로 표현하는 연습을 해보세요."></textarea>
+          <div class="q-tip">💡 유창함보다 논리적 구조가 중요해요. Point → Reason → Example 순서로 말하는 연습을 해보세요.</div>
+        </div>
+      </div>
+      <div class="q-card" onclick="toggleQ(this, event)">
+        <div class="q-number">Q 10</div>
+        <div class="q-text">이순신 장군과 정약용 중 한 명을 다른 위인으로 교체한다면 누구로, 왜?</div>
+        <div class="q-answer">
+          <textarea class="answer-area" placeholder="과거 기출 인성 질문이에요. 정답은 없으니 자신의 가치관을 논리적으로 표현하는 연습을 해보세요."></textarea>
+          <div class="q-tip">💡 정답이 없는 질문에서 자신의 논리와 가치관이 드러나요. 어떤 답을 하든 근거를 명확하게 말할 수 있어야 해요.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ STRATEGY ════════════ -->
+<section class="section" id="strategy">
+  <div class="page-header">
+    <div>
+      <div class="page-title">입시 <span>전략 & 정보</span></div>
+      <div class="page-subtitle">2025~2026학년도 기준 — 공식 홈페이지(minjok.hs.kr)에서 반드시 최신 요강 확인</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">민사고 전형 구조 (2025~2026 기준)</div>
+        <div class="info-block">
+          <div class="info-block-title">📋 모집 인원 (총 160명)</div>
+          <ul class="info-list">
+            <li>일반전형 96명(60%) — 전국 모집 · 핵심 경쟁 전형</li>
+            <li>강원인재전형 32명(20%) — 강원특별자치도 (2025 신설, 최근 미달 발생)</li>
+            <li>사회통합전형 32명(20%) — 전국 · 기회균등+사회다양성</li>
+            <li>강원인재 미달 시 미달 인원의 50%가 일반전형으로 이월</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <div class="info-block-title">📝 1단계: 교과성적 40점 만점 (2배수 선발)</div>
+          <ul class="info-list">
+            <li>중2-1(20%) · 중2-2(20%) · 중3-1(<strong>30%</strong>) · 중3-2(<strong>30%</strong>)</li>
+            <li>국·영·수 2배 가중 / 사회·과학·체육·음악미술 1배</li>
+            <li>A=40점 · B=20점 · C=10점 — A→B 격차 20점 (치명적)</li>
+            <li>출결 감점: 미인정 결석 일수 × 0.2점</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <div class="info-block-title">🎤 2단계: 면접 60점 + 체력검사 (감점제)</div>
+          <ul class="info-list">
+            <li>총점: 1단계 40점 + 면접 60점 = 100점 (면접이 승부처)</li>
+            <li>자소서·학생부 기반 개별면접 · 개인별 맞춤 꼬리질문</li>
+            <li>자기주도학습 영역 + 인성 영역 (배려·나눔·협력·존중)</li>
+            <li>셔틀런: 남자 40회 / 여자 23회 기준</li>
+          </ul>
+        </div>
+        <div style="font-size:12px;color:var(--muted);padding:10px;background:var(--surface2);border-radius:8px">
+          📅 2026학년도 참고 일정 (작년 기준)<br>
+          원서접수: 12월 초 · 1단계 발표: 12월 18일 · 면접: 12월 22~23일 · 최종합격: 12월 31일<br>
+          ※ 2027학년도 요강은 2026년 9월 공개 예정
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">합격자 특징 (실제 데이터 기반)</div>
+        <ul class="info-list">
+          <li>지원자 대부분이 전교 1~2등 — 올A가 출발선, 승부는 면접에서</li>
+          <li>내신 만점 학생 123명 중 면접에서 67명만 합격(54%) — 성적만으론 부족</li>
+          <li>영어 실력: 원서 독해·에세이·토론 가능 수준 (TOEFL 90~110+ 상응)</li>
+          <li>공인어학성적·교외상·논문 자소서 기재 불가 (위반 시 0점)</li>
+          <li>학비 약 3,000만원/년 · 전액장학금 제도·사회통합전형(20%) 운영</li>
+        </ul>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">합격 우선순위 전략</div>
+        <div class="info-block">
+          <div class="info-block-title">① 전 과목 A 확보 (특히 국·영·수, 중3 비중 60%)</div>
+          <ul class="info-list">
+            <li>B 하나 = 20점 손실 — 중3 때 B 한 개는 치명적</li>
+            <li>동점자: 최근 학기 성적 → 우수 교과 개수 → 미인정 결석 순</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <div class="info-block-title">② 일관된 세특·창체 — 콘셉트와 방향성</div>
+          <ul class="info-list">
+            <li>주된 테마 1개 + 부수적 테마 1개로 일관성 형성</li>
+            <li>수업 → 흥미 → 추가 탐구 → 보고서 흐름이 자기주도학습 근거</li>
+            <li>교사와 적극 소통해 구체적 탐구 내용이 기재되도록 유도</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <div class="info-block-title">③ 독특한 전문성과 깊이 있는 자소서</div>
+          <ul class="info-list">
+            <li>'XX 천재'로 불릴 분야 — 남들이 갖지 않은 관심사</li>
+            <li>독서 소감: 단순 감상 ❌ → 생각의 변화·실질적 발전 ✅</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <div class="info-block-title">④ 꼬리질문 대응 면접 + ⑤ 실질적 영어 능력</div>
+          <ul class="info-list">
+            <li>자소서 모든 내용에 '왜?'를 3단계 깊이까지 답할 수 있어야</li>
+            <li>영어 에세이·토론 가능 수준 · 공인시험 점수는 제출 자체 불가</li>
+            <li>셔틀런 미리 연습: 남 40회 / 여 23회</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">나만의 전략 메모</div>
+        <textarea id="strategy-memo" class="essay-textarea" style="min-height:160px" oninput="saveStrategyMemo()" placeholder="나만의 강점, 차별화 포인트, 입시 전략을 자유롭게 메모하세요.
+
+예시:
+- 강점: 수학올림피아드 경험 + 환경 문제 심층 탐구 (콘셉트 연결 가능)
+- 세특 방향: 수학·과학을 환경 문제에 적용하는 탐구로 통일
+- 독서: 환경 관련 영어 원서 1권 선정 예정
+- 약점: 셔틀런 연습 필요 → 주 3회 훈련 시작"></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ SCHOOL LIFE ════════════ -->
+<section class="section" id="schoollife">
+  <div class="page-header">
+    <div>
+      <div class="page-title">학교생활 <span>관리</span></div>
+      <div class="page-subtitle">대회·수상 / 동아리 / 봉사 / 세특을 한 곳에서 관리해요</div>
+    </div>
+  </div>
+
+  <!-- 🏆 대회·수상 -->
+  <div id="sl-awards" class="sl-section">
+    <div class="sl-section-header">
+      <div style="font-family:'Noto Serif KR',serif;font-size:17px;font-weight:600;color:var(--accent)">🏆 대회·수상 실적</div>
+      <button onclick="addAward()" style="background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.3);color:var(--accent);font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:4px 12px;border-radius:6px;cursor:pointer">+ 추가</button>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px">교내 학술대회·과학프로젝트·토론대회 수상이 세특을 보강하는 증거로 기능해요. 교외상은 생기부 기재 불가, 자소서에서만 활용 가능.</div>
+    <div id="awards-list"></div>
+  </div>
+
+  <hr class="divider" style="margin:24px 0">
+
+  <!-- 🏫 동아리 -->
+  <div id="sl-club" class="sl-section">
+    <div class="sl-section-header">
+      <div style="font-family:'Noto Serif KR',serif;font-size:17px;font-weight:600;color:var(--accent)">🏫 동아리 활동</div>
+      <button onclick="addClub()" style="background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.3);color:var(--accent);font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:4px 12px;border-radius:6px;cursor:pointer">+ 추가</button>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px">진로 연계 정규 창체동아리 주력 — 단순 가입 ❌ 기획·발표·실험 설계 등 <strong>주도적 역할</strong> ✅</div>
+    <div id="clubs-list"></div>
+  </div>
+
+  <hr class="divider" style="margin:24px 0">
+
+  <!-- ❤️ 봉사 -->
+  <div id="sl-volunteer" class="sl-section">
+    <div class="sl-section-header">
+      <div style="font-family:'Noto Serif KR',serif;font-size:17px;font-weight:600;color:var(--accent)">❤️ 봉사 활동</div>
+      <button onclick="addVolunteer()" style="background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.3);color:var(--accent);font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:4px 12px;border-radius:6px;cursor:pointer">+ 추가</button>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px">민사고 건학이념 '촛불 정신' — <strong>이타심과 지속성</strong>이 드러나야 해요. 내신보다 봉사정신이 기본이라고 민사고 관계자가 강조했어요.</div>
+    <div id="volunteers-list"></div>
+  </div>
+
+  <hr class="divider" style="margin:24px 0">
+
+  <!-- 📝 세특 -->
+  <div id="sl-sespec" class="sl-section">
+    <div class="sl-section-header">
+      <div style="font-family:'Noto Serif KR',serif;font-size:17px;font-weight:600;color:var(--accent)">📝 세특 (세부능력특기사항)</div>
+      <button onclick="addSespecSubject()" style="background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.3);color:var(--accent);font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:4px 12px;border-radius:6px;cursor:pointer">+ 과목 추가</button>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px">합격생들이 "가장 공을 많이 들인 부분"으로 꼽아요. 면접에서 세특 내용 기반 꼬리질문이 나오므로 쓴 내용의 원리를 정확히 설명할 수 있어야 해요.</div>
+
+    <!-- 세특 콘셉트 -->
+    <div class="card" style="margin-bottom:16px;border-color:rgba(200,169,110,0.2)">
+      <div class="card-title">🎯 나의 세특 콘셉트</div>
+      <div class="grid-2" style="gap:12px">
+        <div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px">주된 테마</div>
+          <input id="sespec-theme1" type="text" placeholder="예: 수학·과학을 환경 문제에 적용하는 탐구" oninput="saveSespec()"
+            style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:13px;padding:8px 12px;border-radius:8px;outline:none">
+        </div>
+        <div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px">부수적 테마</div>
+          <input id="sespec-theme2" type="text" placeholder="예: 인문학적 사고와 과학의 융합" oninput="saveSespec()"
+            style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:13px;padding:8px 12px;border-radius:8px;outline:none">
+        </div>
+      </div>
+    </div>
+
+    <div id="sespec-list"></div>
+  </div>
+</section>
+
+<!-- ════════════ ANALYSIS ════════════ -->
+<section class="section" id="analysis">
+  <div class="page-header">
+    <div>
+      <div class="page-title">합격 <span>종합 분석</span></div>
+      <div class="page-subtitle">입력한 모든 데이터를 종합해 AI가 합격 가능성과 보완점을 분석해요</div>
+    </div>
+  </div>
+
+  <!-- 현황 요약 -->
+  <div class="grid-3" style="margin-bottom:20px">
+    <div class="card" style="text-align:center">
+      <div class="card-title">📊 성적 환산점수</div>
+      <div class="stat-big" id="analysis-score" style="font-size:32px">-</div>
+      <div class="stat-label">/ 40점</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="card-title">🏆 활동·수상 수</div>
+      <div class="stat-big" id="analysis-activities" style="font-size:32px">0</div>
+      <div class="stat-label">개 기록됨</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="card-title">📚 세특·독서</div>
+      <div class="stat-big" id="analysis-sespec" style="font-size:32px">0</div>
+      <div class="stat-label">과목 + 권</div>
+    </div>
+  </div>
+
+  <!-- 항목별 준비 현황 -->
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title">준비 현황 체크</div>
+    <div id="analysis-checklist" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+  </div>
+
+  <!-- AI 분석 -->
+  <div class="card" style="border-color:rgba(200,169,110,0.3)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <div class="card-title" style="margin-bottom:0">🎯 종합 합격 가능성 AI 분석</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span id="analysis-timer" style="font-size:11px;color:var(--muted)"></span>
+        <button onclick="runAnalysis()" id="analysis-btn"
+          style="background:var(--accent);border:none;color:#0a0c10;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;padding:8px 20px;border-radius:8px;cursor:pointer">
+          분석 시작
+        </button>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px">성적·대회·동아리·봉사·세특·독서·자소서 작성 현황을 모두 종합해서 분석해요. 참고용이며 실제 합격 여부와 다를 수 있어요.</div>
+
+    <div id="analysis-result" style="display:none">
+      <div style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px">
+          <div>
+            <span style="font-family:'Noto Serif KR',serif;font-size:42px;font-weight:700" id="analysis-prob-num">0</span>
+            <span style="font-size:20px;font-weight:600;color:var(--accent)">%</span>
+            <span style="font-size:13px;color:var(--muted);margin-left:10px" id="analysis-prob-label"></span>
+          </div>
+        </div>
+        <div style="height:12px;background:var(--surface2);border-radius:99px;overflow:hidden">
+          <div id="analysis-prob-bar" style="height:100%;width:0%;border-radius:99px;transition:width 1.2s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,var(--accent),var(--accent2))"></div>
+        </div>
+      </div>
+      <div id="analysis-text" style="font-size:13px;line-height:1.9;color:var(--text);white-space:pre-wrap;padding:18px;background:var(--surface2);border-radius:12px;border:1px solid var(--border)"></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════ SESPEC ════════════ -->
+<section class="section" id="sespec">
+  <div class="page-header">
+    <div>
+      <div class="page-title">세특 & <span>창체 관리</span></div>
+      <div class="page-subtitle">자기주도학습의 증거 — 면접 질문의 핵심 소재</div>
+    </div>
+  </div>
+
+  <div style="padding:10px 14px;background:rgba(200,169,110,0.07);border:1px solid rgba(200,169,110,0.2);border-radius:8px;font-size:12px;color:var(--text);margin-bottom:20px;line-height:1.8">
+    💡 <strong style="color:var(--accent)">세특 작성 핵심 원칙</strong><br>
+    ① 일관된 콘셉트(주된 테마 1개 + 부수적 테마 1개) → ② 수업 내용 → 흥미 발견 → 추가 탐구 → 보고서 흐름 → ③ 구체적 탐구 주제·실험명 기재 → ④ 교사와 적극 소통<br>
+    면접에서 세특 내용 기반 꼬리질문이 나오므로, <strong>쓴 내용의 원리를 정확히 설명할 수 있어야 해요.</strong>
+  </div>
+
+  <!-- 나의 콘셉트 -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">🎯 나의 세특 콘셉트 (방향성)</div>
+    <div class="grid-2" style="gap:12px;margin-bottom:12px">
+      <div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px">주된 테마</div>
+        <input id="sespec-theme1" type="text" placeholder="예: 수학·과학을 환경 문제에 적용하는 탐구"
+          oninput="saveSespec()"
+          style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:13px;padding:8px 12px;border-radius:8px;outline:none">
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px">부수적 테마</div>
+        <input id="sespec-theme2" type="text" placeholder="예: 인문학적 사고와 과학의 융합"
+          oninput="saveSespec()"
+          style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:13px;padding:8px 12px;border-radius:8px;outline:none">
+      </div>
+    </div>
+  </div>
+
+  <!-- 과목별 세특 기록 -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">📚 과목별 세특 기록</div>
+    <div id="sespec-list"></div>
+    <button onclick="addSespecSubject()"
+      style="margin-top:12px;background:transparent;border:1px dashed var(--border);color:var(--muted);font-family:'Noto Sans KR',sans-serif;font-size:13px;padding:8px;border-radius:8px;cursor:pointer;width:100%">
+      + 과목 추가
+    </button>
+  </div>
+
+  <!-- 창체 활동 -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">🏫 동아리 활동</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">진로 연계 정규 창체동아리 — 단순 가입이 아니라 기획·발표·실험 설계 등 주도적 역할이 중요</div>
+      <textarea id="sespec-club" class="essay-textarea" style="min-height:120px" oninput="saveSespec()" placeholder="동아리명:
+역할:
+주요 활동:
+자기주도 포인트 (기획·발표·실험 등):"></textarea>
+    </div>
+    <div class="card">
+      <div class="card-title">❤️ 봉사 활동</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">민사고 건학이념 '촛불 정신' — 이타심과 지속성이 드러나야 함. 내신보다 봉사정신이 기본이라고 강조</div>
+      <textarea id="sespec-volunteer" class="essay-textarea" style="min-height:120px" oninput="saveSespec()" placeholder="활동명:
+기간·시간:
+한 일:
+이타심·지속성 포인트:"></textarea>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ BOOKS ════════════ -->
+<section class="section" id="books">
+  <div class="page-header">
+    <div>
+      <div class="page-title">독서 <span>기록</span></div>
+      <div class="page-subtitle">자소서 독서 소감 + 면접 꼬리질문 대비 — 영어 도서 1권 필수</div>
+    </div>
+  </div>
+
+  <div style="padding:10px 14px;background:rgba(200,169,110,0.07);border:1px solid rgba(200,169,110,0.2);border-radius:8px;font-size:12px;color:var(--text);margin-bottom:20px;line-height:1.8">
+    ⭐ <strong style="color:var(--accent)">독서 소감이 지원자 간 변별력이 가장 크게 발생하는 영역</strong><br>
+    단순 감상·지식 나열 ❌ → <strong>독서를 통한 생각의 변화와 실질적 발전</strong> ✅<br>
+    면접에서 해당 책 꼬리질문이 나오므로 <strong>자신 있게 설명할 수 있는 책</strong>을 골라야 해요.<br>
+    중1~2: 인문·사회·과학·문학 골고루 / 중3: 관심 분야 심화 도서 전략적 선택
+  </div>
+
+  <div id="book-list"></div>
+
+  <button onclick="addBook()"
+    style="width:100%;margin-top:4px;background:transparent;border:1px dashed var(--border);color:var(--muted);font-family:'Noto Sans KR',sans-serif;font-size:13px;padding:12px;border-radius:10px;cursor:pointer">
+    + 책 추가
+  </button>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">📌 영어 로드맵 (보고서 기준)</div>
+    <div class="grid-2" style="gap:16px">
+      <div>
+        <div style="font-size:12px;font-weight:500;color:var(--accent);margin-bottom:6px">중1</div>
+        <ul class="info-list">
+          <li>영어 내신 A 기반 확보</li>
+          <li>영어 원서 읽기 습관 형성</li>
+          <li>듣기·말하기 기초 능력 향상</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:500;color:var(--accent);margin-bottom:6px">중2</div>
+        <ul class="info-list">
+          <li>영어 내신 A 유지 (반영 시작)</li>
+          <li>영어 에세이·논술 기초 연습</li>
+          <li>교내 영어 토론·디베이트 활동</li>
+          <li>자소서에 기술할 영어 도서 선정</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:500;color:var(--accent);margin-bottom:6px">중3 상반기</div>
+        <ul class="info-list">
+          <li>내신 A 유지 (비중 30%)</li>
+          <li>영어로 의견 표현 연습</li>
+          <li>시사 이슈 영어 토론 능력 향상</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:500;color:var(--accent);margin-bottom:6px">중3 하반기</div>
+        <ul class="info-list">
+          <li>자소서 완성 (독서 소감 포함)</li>
+          <li>면접 실전 연습 (영어 질문 대비)</li>
+          <li>셔틀런 체력 대비</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ NEWS ════════════ -->
+<section class="section" id="news">
+  <div class="page-header">
+    <div>
+      <div class="page-title">시사 <span>뉴스</span></div>
+      <div class="page-subtitle">자사고 준비생이 알아두면 좋을 분야별 뉴스</div>
+    </div>
+  </div>
+
+  <div class="grid-3" style="margin-bottom:16px">
+    <div class="card" style="cursor:pointer;border-color:rgba(200,169,110,0.2)" onclick="openNews('politics')">
+      <div style="font-size:22px;margin-bottom:8px">🏛️</div>
+      <div style="font-size:14px;font-weight:500;margin-bottom:4px">정치</div>
+      <div style="font-size:12px;color:var(--muted)">국내 정치·사회 이슈</div>
+    </div>
+    <div class="card" style="cursor:pointer;border-color:rgba(110,168,200,0.2)" onclick="openNews('economy')">
+      <div style="font-size:22px;margin-bottom:8px">📈</div>
+      <div style="font-size:14px;font-weight:500;margin-bottom:4px">경제</div>
+      <div style="font-size:12px;color:var(--muted)">경제·금융·산업 동향</div>
+    </div>
+    <div class="card" style="cursor:pointer;border-color:rgba(110,200,154,0.2)" onclick="openNews('world')">
+      <div style="font-size:22px;margin-bottom:8px">🌏</div>
+      <div style="font-size:14px;font-weight:500;margin-bottom:4px">세계</div>
+      <div style="font-size:12px;color:var(--muted)">국제 정세·외교</div>
+    </div>
+    <div class="card" style="cursor:pointer;border-color:rgba(200,110,200,0.2)" onclick="openNews('culture')">
+      <div style="font-size:22px;margin-bottom:8px">🎭</div>
+      <div style="font-size:14px;font-weight:500;margin-bottom:4px">문화·사회</div>
+      <div style="font-size:12px;color:var(--muted)">문화·교육·환경</div>
+    </div>
+    <div class="card" style="cursor:pointer;border-color:rgba(200,110,110,0.2)" onclick="openNews('science')">
+      <div style="font-size:22px;margin-bottom:8px">🔬</div>
+      <div style="font-size:14px;font-weight:500;margin-bottom:4px">과학·IT</div>
+      <div style="font-size:12px;color:var(--muted)">기술·AI·우주·의학</div>
+    </div>
+    <div class="card" style="cursor:pointer;border-color:rgba(150,150,200,0.2)" onclick="openNews('opinion')">
+      <div style="font-size:22px;margin-bottom:8px">✍️</div>
+      <div style="font-size:14px;font-weight:500;margin-bottom:4px">사설·칼럼</div>
+      <div style="font-size:12px;color:var(--muted)">논설·시각·분석</div>
+    </div>
+  </div>
+
+  <!-- 뉴스 뷰어 -->
+  <div id="news-viewer" style="display:none">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span id="news-viewer-title" style="font-size:15px;font-weight:500"></span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="news-summarize-btn" onclick="summarizeNews()" style="background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.3);color:var(--accent);font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:5px 14px;border-radius:7px;cursor:pointer;font-weight:500">✨ AI 요약</button>
+          <span id="news-timer" style="font-size:11px;color:var(--muted);display:none"></span>
+          <button onclick="openCurrentNews()" style="background:rgba(110,168,200,0.1);border:1px solid rgba(110,168,200,0.3);color:var(--info);font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:5px 14px;border-radius:7px;cursor:pointer">네이버에서 열기 →</button>
+          <button onclick="closeNewsViewer()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1">×</button>
+        </div>
+      </div>
+
+      <!-- AI 요약 결과 -->
+      <div id="news-summary-box" style="display:none;margin-bottom:16px;padding:16px;background:rgba(200,169,110,0.06);border:1px solid rgba(200,169,110,0.2);border-radius:10px">
+        <div style="font-size:12px;color:var(--accent);font-weight:500;margin-bottom:8px">✨ Claude AI 요약</div>
+        <div id="news-summary-text" style="font-size:13px;line-height:1.9;color:var(--text);white-space:pre-wrap"></div>
+      </div>
+
+      <!-- 안내 -->
+      <div style="padding:40px;text-align:center;background:var(--surface2);border-radius:10px;border:1px solid var(--border)">
+        <div style="font-size:32px;margin-bottom:12px">📰</div>
+        <div style="font-size:14px;color:var(--text);margin-bottom:6px" id="news-viewer-title2"></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:20px">보안 정책상 이 창 안에서는 직접 표시가 어려워요.<br>아래 버튼을 눌러 네이버 뉴스에서 읽어주세요.</div>
+        <button onclick="openCurrentNews()" style="background:var(--accent);border:none;color:#0a0c10;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;padding:12px 28px;border-radius:8px;cursor:pointer">네이버 뉴스 열기 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 메모 -->
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">📝 시사 이슈 메모</div>
+    <textarea id="news-memo" class="essay-textarea" style="min-height:120px" oninput="save('newsMemo', this.value)" placeholder="읽은 기사에서 중요하다고 생각한 내용, 나의 의견, 면접에서 활용할 포인트 등을 자유롭게 메모하세요."></textarea>
+  </div>
+</section>
+
+</main>
+
+<script>
+// ── Google Calendar
+function addToGCal(title, startDate, endDate, details) {
+  const base = 'https://calendar.google.com/calendar/render?action=TEMPLATE';
+  const url = `${base}&text=${encodeURIComponent(title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(details)}`;
+  const a = document.createElement('a');
+  a.href = url;
+  a.target = '_blank';
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// ══════════════════════════════════════
+//  저장 / 불러오기 헬퍼
+// ══════════════════════════════════════
+function save(key, value) { try { localStorage.setItem('minsago_' + key, JSON.stringify(value)); } catch(e){} }
+function load(key, fallback) { try { const v = localStorage.getItem('minsago_' + key); return v !== null ? JSON.parse(v) : fallback; } catch(e){ return fallback; } }
+
+// ── Nav & Sections
+function showSection(id, btnEl) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  const sec = document.getElementById(id);
+  if (sec) sec.classList.add('active');
+  // 상위 nav-tab도 active 처리
+  if (btnEl) {
+    const group = btnEl.closest('.nav-group');
+    if (group) {
+      const mainTab = group.querySelector('.nav-tab');
+      if (mainTab) mainTab.classList.add('active');
+    } else if (btnEl.classList.contains('nav-tab')) {
+      btnEl.classList.add('active');
+    }
+  }
+  save('activeTab', id);
+  if (id === 'analysis') updateAnalysisSummary();
+}
+
+function scrollToSchool(anchor) {
+  setTimeout(() => {
+    const el = document.getElementById('sl-' + anchor);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+// ── Today date & D-Day
+function initDate() {
+  const now = new Date();
+  const days = ['일','월','화','수','목','금','토'];
+  document.getElementById('today-date').textContent =
+    `${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일 (${days[now.getDay()]})`;
+  updateDday();
+}
+
+function updateDday() {
+  const saved = load('ddayDate', '2026-12-08');
+  document.getElementById('dday-input').value = saved;
+  const target = new Date(saved);
+  const now = new Date();
+  now.setHours(0,0,0,0);
+  const diff = Math.ceil((target - now) / (1000*60*60*24));
+  if (diff > 0) document.getElementById('dday-count').textContent = diff;
+  else if (diff === 0) document.getElementById('dday-count').textContent = 'D-Day!';
+  else document.getElementById('dday-count').textContent = 'D+' + Math.abs(diff);
+}
+
+function onDdayChange(val) {
+  save('ddayDate', val);
+  updateDday();
+}
+
+// ── Dashboard tasks (dynamic)
+const DEFAULT_TASKS = [
+  { text: '수학 내신 모의고사 풀기',       tag: 'tag-red',   label: '긴급', done: false },
+  { text: '자기소개서 1번 문항 초안 작성', tag: 'tag-gold',  label: '중요', done: false },
+  { text: '면접 예상 질문 3개 연습하기',   tag: 'tag-blue',  label: '면접', done: false },
+  { text: '영어 단어 50개 암기',           tag: 'tag-green', label: '성적', done: false },
+];
+
+let tasks = [];
+let newTaskTag = { cls: 'tag-gold', label: '중요' };
+
+function renderTasks() {
+  const container = document.getElementById('dash-tasks');
+  container.innerHTML = '';
+  if (tasks.length === 0) return;
+  tasks.forEach((task, i) => {
+    const row = document.createElement('div');
+    row.className = 'task-row';
+    row.innerHTML = `
+      <div class="task-check${task.done ? ' done' : ''}" onclick="toggleTaskDyn(${i})"></div>
+      <div class="task-text${task.done ? ' done' : ''}" ondblclick="editTaskText(${i}, this)" style="flex:1;cursor:text" title="더블클릭으로 편집">${task.text}</div>
+      <span class="task-tag ${task.cls}">${task.label}</span>
+      <button class="task-edit-btn" onclick="deleteTask(${i})" title="삭제">✕</button>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function toggleTaskDyn(i) {
+  tasks[i].done = !tasks[i].done;
+  saveDashTasks();
+  renderTasks();
+}
+
+function deleteTask(i) {
+  tasks.splice(i, 1);
+  saveDashTasks();
+  renderTasks();
+}
+
+function editTaskText(i, el) {
+  const original = tasks[i].text;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = original;
+  input.style.cssText = 'flex:1;background:var(--surface2);border:1px solid var(--accent);color:var(--text);font-family:\'Noto Sans KR\',sans-serif;font-size:13px;padding:2px 8px;border-radius:6px;outline:none;width:100%';
+  el.replaceWith(input);
+  input.focus();
+  const finish = () => {
+    const val = input.value.trim();
+    if (val) tasks[i].text = val;
+    saveDashTasks();
+    renderTasks();
+  };
+  input.addEventListener('blur', finish);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') { input.blur(); } if (e.key === 'Escape') { tasks[i].text = original; renderTasks(); } });
+}
+
+function openAddTask() {
+  document.getElementById('add-task-form').style.display = 'block';
+  document.getElementById('new-task-text').focus();
+  setNewTag('tag-gold', '중요');
+}
+
+function closeAddTask() {
+  document.getElementById('add-task-form').style.display = 'none';
+  document.getElementById('new-task-text').value = '';
+}
+
+function setNewTag(cls, label) {
+  newTaskTag = { cls, label };
+  document.querySelectorAll('.tag-sel-btn').forEach(b => b.classList.remove('selected'));
+  const map = { 'tag-red':'tag-red-sel','tag-gold':'tag-gold-sel','tag-blue':'tag-blue-sel','tag-green':'tag-green-sel' };
+  document.querySelector('.' + map[cls])?.classList.add('selected');
+}
+
+function confirmAddTask() {
+  const text = document.getElementById('new-task-text').value.trim();
+  if (!text) return;
+  tasks.push({ text, cls: newTaskTag.cls, label: newTaskTag.label, done: false });
+  saveDashTasks();
+  renderTasks();
+  closeAddTask();
+}
+
+function saveDashTasks() { save('dashTasks', tasks); }
+
+function loadDashTasks() {
+  const saved = load('dashTasks', null);
+  tasks = (saved !== null ? saved : DEFAULT_TASKS.map(t => ({...t}))).filter(t => t && t.text);
+  renderTasks();
+}
+
+// ── Checklist (dynamic)
+const DEFAULT_CL = [
+  { cat: '📋 서류 준비', items: [
+    { name: '학교생활기록부 (학생부) 정리', desc: '출결, 수상, 독서 활동 등 전반적 확인', pri: 'tag-red|필수',  done: false },
+    { name: '자기소개서 작성 완료',          desc: '4개 문항 모두 작성 및 퇴고',           pri: 'tag-red|필수',  done: false },
+    { name: '자기소개서 금지 항목 확인',      desc: '공인어학성적·교외상·논문·해외활동 기재 금지 (위반 시 0점)',    pri: 'tag-gold|중요', done: false },
+    { name: '성적증명서 발급',               desc: '중학교 성적표 준비',                   pri: 'tag-gold|중요', done: false },
+  ]},
+  { cat: '📚 학업 준비', items: [
+    { name: '수학 심화 개념 정리',       desc: '중3 수학 전 범위 마스터',         pri: 'tag-red|필수',  done: false },
+    { name: '영어 에세이 쓰기 연습',     desc: '영어 작문 실력 향상',             pri: 'tag-gold|중요', done: false },
+    { name: '독서 목록 정리 (20권 이상)',desc: '인문·사회·과학 분야 균형 있게',   pri: 'tag-blue|권장', done: false },
+    { name: '수상 실적 정리',            desc: '교내외 수상 목록 및 증빙 준비',   pri: 'tag-blue|권장', done: false },
+  ]},
+  { cat: '🎤 면접 준비', items: [
+    { name: '지원 동기 3분 스피치 준비', desc: '왜 민사고인지 명확히 설명',           pri: 'tag-red|필수',  done: false },
+    { name: '모의 면접 3회 이상 연습',   desc: '부모님 또는 선생님과 실전 연습',      pri: 'tag-gold|중요', done: false },
+    { name: '시사 상식 및 시사 이슈 정리',desc: '국내외 주요 뉴스 파악',             pri: 'tag-blue|권장', done: false },
+  ]},
+];
+
+let clData = [];
+
+function renderCL() {
+  const body = document.getElementById('cl-body');
+  body.innerHTML = '';
+  clData.forEach((cat, ci) => {
+    const catDiv = document.createElement('div');
+    catDiv.className = 'cl-category';
+    // 카테고리 헤더
+    const header = document.createElement('div');
+    header.className = 'cl-category-title';
+    header.innerHTML = `<span style="flex:1">${cat.cat}</span><button onclick="deleteCat(${ci})" title="카테고리 삭제" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:12px;padding:2px 6px;border-radius:4px" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--muted)'">✕</button>`;
+    catDiv.appendChild(header);
+    // 항목들
+    cat.items.forEach((item, ii) => {
+      const [priCls, priLabel] = item.pri.split('|');
+      const row = document.createElement('div');
+      row.className = 'cl-item';
+      row.innerHTML = `
+        <div class="task-check${item.done ? ' done' : ''}" onclick="toggleCLItem(${ci},${ii})"></div>
+        <div class="cl-info" style="flex:1">
+          <div class="cl-name${item.done ? ' done' : ''}">${item.name}</div>
+          ${item.desc ? `<div class="cl-date">${item.desc}</div>` : ''}
+        </div>
+        <span class="cl-priority task-tag ${priCls}">${priLabel}</span>
+        <button onclick="deleteCLItem(${ci},${ii})" title="삭제" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:12px;padding:2px 6px;border-radius:4px;flex-shrink:0" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--muted)'">✕</button>
+      `;
+      catDiv.appendChild(row);
+    });
+    body.appendChild(catDiv);
+  });
+  updateCLProgress();
+  updateCatSelect();
+}
+
+function toggleCLItem(ci, ii) {
+  clData[ci].items[ii].done = !clData[ci].items[ii].done;
+  saveCL(); renderCL();
+}
+
+function deleteCLItem(ci, ii) {
+  clData[ci].items.splice(ii, 1);
+  saveCL(); renderCL();
+}
+
+function deleteCat(ci) {
+  if (clData[ci].items.length > 0 && !confirm(`"${clData[ci].cat}" 카테고리와 항목 ${clData[ci].items.length}개를 모두 삭제할까요?`)) return;
+  clData.splice(ci, 1);
+  saveCL(); renderCL();
+}
+
+function updateCatSelect() {
+  const sel = document.getElementById('cl-new-cat');
+  if (!sel) return;
+  sel.innerHTML = clData.map((c, i) => `<option value="${i}">${c.cat}</option>`).join('');
+}
+
+function confirmAddCL() {
+  const name = document.getElementById('cl-new-name').value.trim();
+  if (!name) { document.getElementById('cl-new-name').focus(); return; }
+  const desc = document.getElementById('cl-new-desc').value.trim();
+  const pri  = document.getElementById('cl-new-pri').value;
+  const ci   = parseInt(document.getElementById('cl-new-cat').value);
+  if (isNaN(ci) || !clData[ci]) return;
+  clData[ci].items.push({ name, desc, pri, done: false });
+  document.getElementById('cl-new-name').value = '';
+  document.getElementById('cl-new-desc').value = '';
+  saveCL(); renderCL();
+}
+
+function showAddCatForm() {
+  const f = document.getElementById('cl-cat-form');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+  if (f.style.display === 'block') document.getElementById('cl-new-cat-name').focus();
+}
+
+function confirmAddCat() {
+  const name = document.getElementById('cl-new-cat-name').value.trim();
+  if (!name) return;
+  clData.push({ cat: name, items: [] });
+  document.getElementById('cl-new-cat-name').value = '';
+  document.getElementById('cl-cat-form').style.display = 'none';
+  saveCL(); renderCL();
+}
+
+function updateCLProgress() {
+  let total = 0, done = 0;
+  clData.forEach(c => c.items.forEach(i => { total++; if (i.done) done++; }));
+  const pct = total ? Math.round(done / total * 100) : 0;
+  document.getElementById('cl-done-count').textContent = done;
+  document.getElementById('cl-total-count').textContent = total;
+  document.getElementById('cl-progress').style.width = pct + '%';
+  document.getElementById('cl-header-progress').textContent = `${done} / ${total} 완료 (${pct}%)`;
+}
+
+function saveCL() { save('checklist2', clData); }
+
+function loadCL() {
+  const saved = load('checklist2', null);
+  clData = saved !== null ? saved : JSON.parse(JSON.stringify(DEFAULT_CL));
+  renderCL();
+}
+
+// ── Grade (성취도 기반 학기별 시스템)
+const SUBJECTS = [
+  { name: '국어',     weight: 2 },
+  { name: '수학',     weight: 2 },
+  { name: '영어',     weight: 2 },
+  { name: '사회/역사', weight: 1 },
+  { name: '과학',     weight: 1 },
+  { name: '체육',     weight: 1 },
+  { name: '음악/미술', weight: 1 },
+];
+const GRADE_PTS = { A: 40, B: 20, C: 10, D: 5, E: 0 };
+const SEM_WEIGHTS = [0.2, 0.2, 0.3, 0.3];
+const SEM_NAMES = ['중2-1학기','중2-2학기','중3-1학기','중3-2학기'];
+
+let gradeData = Array.from({length:4}, () => Array(7).fill('A'));
+
+function renderSemPanels() {
+  const container = document.getElementById('sem-panels');
+  container.innerHTML = '';
+  gradeData.forEach((sem, si) => {
+    const panel = document.createElement('div');
+    panel.className = 'sem-panel';
+    panel.id = 'sp' + si;
+    panel.style.display = si === 0 ? 'block' : 'none';
+    SUBJECTS.forEach((subj, ji) => {
+      const row = document.createElement('div');
+      row.className = 'grade-subject';
+      row.innerHTML = `
+        <div class="grade-name" style="flex:1">${subj.name} <span style="font-size:10px;color:var(--muted)">(×${subj.weight})</span></div>
+        <select onchange="onGradeChange(${si},${ji},this.value)"
+          style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:5px 10px;border-radius:8px;outline:none;cursor:pointer">
+          ${['A','B','C','D','E'].map(g => `<option value="${g}" ${gradeData[si][ji]===g?'selected':''}>${g}</option>`).join('')}
+        </select>
+        <span style="font-size:12px;font-weight:600;width:36px;text-align:right;color:${gradeData[si][ji]==='A'?'var(--success)':gradeData[si][ji]==='B'?'var(--accent)':'var(--danger)'}">${GRADE_PTS[gradeData[si][ji]]}점</span>
+      `;
+      panel.appendChild(row);
+    });
+    container.appendChild(panel);
+  });
+}
+
+function showSem(idx, btn) {
+  document.querySelectorAll('.sem-panel').forEach(p => p.style.display = 'none');
+  document.getElementById('sp' + idx).style.display = 'block';
+  document.querySelectorAll('.sem-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function onGradeChange(si, ji, val) {
+  gradeData[si][ji] = val;
+  renderSemPanels();
+  showSem(si, document.querySelectorAll('.sem-tab')[si]);
+  calcTotalScore();
+  saveGrades();
+}
+
+function calcTotalScore() {
+  let total = 0;
+  gradeData.forEach((sem, si) => {
+    let semRaw = 0, semMax = 0;
+    SUBJECTS.forEach((subj, ji) => {
+      semRaw += GRADE_PTS[sem[ji]] * subj.weight;
+      semMax += 40 * subj.weight;
+    });
+    total += (semRaw / semMax) * 40 * SEM_WEIGHTS[si];
+  });
+  document.getElementById('total-score').textContent = total.toFixed(2);
+  document.getElementById('avg-score') && (document.getElementById('avg-score').textContent = total.toFixed(2));
+}
+
+function calcAbsent() {
+  const days = parseInt(document.getElementById('absent-days').value) || 0;
+  const lates = parseInt(document.getElementById('late-count').value) || 0;
+  const totalDays = days + Math.floor(lates / 3);
+  const deduct = totalDays <= 2 ? 0 : totalDays * 0.2;
+  const el = document.getElementById('absent-result');
+  if (deduct === 0) {
+    el.textContent = '출결 감점 없음 ✓ (2회 이하)';
+    el.style.color = 'var(--success)';
+  } else {
+    el.textContent = `출결 감점: -${deduct.toFixed(1)}점 (환산 결석 ${totalDays}일)`;
+    el.style.color = 'var(--danger)';
+  }
+  saveGrades();
+}
+
+function saveGrades() {
+  save('gradeData2', gradeData);
+  save('absentDays', document.getElementById('absent-days')?.value || '0');
+  save('lateCount', document.getElementById('late-count')?.value || '0');
+  const spec = document.getElementById('spec-memo');
+  if (spec) save('specMemo', spec.value);
+}
+
+function loadGrades() {
+  const saved = load('gradeData2', null);
+  if (saved) gradeData = saved;
+  renderSemPanels();
+  calcTotalScore();
+
+  const absent = load('absentDays', '0');
+  const late = load('lateCount', '0');
+  const abEl = document.getElementById('absent-days');
+  const ltEl = document.getElementById('late-count');
+  if (abEl) abEl.value = absent;
+  if (ltEl) ltEl.value = late;
+  calcAbsent();
+
+  const spec = document.getElementById('spec-memo');
+  if (spec) {
+    const saved = load('specMemo', '');
+    spec.value = saved || '';
+  }
+}
+
+// ── Mobile menu
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  const btn = document.getElementById('hamburger-btn');
+  menu.classList.toggle('open');
+  btn.textContent = menu.classList.contains('open') ? '✕' : '☰';
+}
+function closeMobileMenu() {
+  document.getElementById('mobile-menu').classList.remove('open');
+  document.getElementById('hamburger-btn').textContent = '☰';
+}
+
+// ── Essay tabs
+function showEssay(idx, btn) {
+  document.querySelectorAll('.essay-panel').forEach(p => p.style.display = 'none');
+  document.getElementById('ep'+idx).style.display = 'block';
+  document.querySelectorAll('#essay-tabs .btn').forEach(b => b.classList.add('btn-ghost'));
+  btn.classList.remove('btn-ghost');
+}
+
+function updateEssayCount(idx) {
+  const len = document.getElementById('ea'+idx).value.length;
+  document.getElementById('ec'+idx).textContent = len;
+  updateEssayPct();
+  // 자동 저장 (타이핑할 때마다)
+  save('essay_'+idx, document.getElementById('ea'+idx).value);
+}
+
+function updateEssayPct() {
+  let total = 0;
+  for (let i = 0; i < 5; i++) {
+    const el = document.getElementById('ea'+i);
+    if (el) total += Math.min(el.value.length, 300);
+  }
+  const pct = Math.round(total / (5*300) * 100);
+  document.getElementById('essay-pct').textContent = pct + '%';
+}
+
+function saveEssay(idx, btnEl) {
+  save('essay_'+idx, document.getElementById('ea'+idx).value);
+  if (btnEl) {
+    btnEl.textContent = '저장됨 ✓';
+    setTimeout(() => btnEl.textContent = '저장', 1500);
+  }
+}
+
+function loadEssays() {
+  for (let i = 0; i < 5; i++) {
+    const saved = load('essay_'+i, '');
+    if (saved) {
+      const el = document.getElementById('ea'+i);
+      if (el) { el.value = saved; updateEssayCount(i); }
+    }
+  }
+}
+
+// ── Interview toggle & save
+function toggleQ(card, e) {
+  // 텍스트박스·팁 클릭 시 토글 무시
+  if (e && (e.target.closest('.q-answer'))) return;
+  card.classList.toggle('open');
+}
+
+function saveAnswer(idx) {
+  const val = document.getElementById('qa'+idx).value;
+  save('answer_'+idx, val);
+}
+
+function updateAnswerState(card, text) {
+  card.classList.remove('answered-no', 'answered-partial', 'answered');
+  const len = text.trim().length;
+  if (len === 0)        card.classList.add('answered-no');
+  else if (len < 80)   card.classList.add('answered-partial');
+  else                 card.classList.add('answered');
+}
+
+function loadAnswers() {
+  document.querySelectorAll('.answer-area').forEach((ta, i) => {
+    ta.id = 'qa' + i;
+    const saved = load('answer_'+i, '');
+    if (saved) ta.value = saved;
+    const card = ta.closest('.q-card');
+    if (card) updateAnswerState(card, ta.value);
+    ta.addEventListener('input', () => {
+      save('answer_'+i, ta.value);
+      if (card) updateAnswerState(card, ta.value);
+    });
+  });
+}
+
+// ── Strategy memo
+function saveStrategyMemo() {
+  const el = document.getElementById('strategy-memo');
+  if (el) save('strategyMemo', el.value);
+}
+
+function loadStrategyMemo() {
+  const el = document.getElementById('strategy-memo');
+  if (el) el.value = load('strategyMemo', '');
+}
+
+// ── News
+const NEWS_SOURCES = {
+  politics: { label: '🏛️ 정치',   url: 'https://news.naver.com/section/100' },
+  economy:  { label: '📈 경제',   url: 'https://news.naver.com/section/101' },
+  world:    { label: '🌏 세계',   url: 'https://news.naver.com/section/104' },
+  culture:  { label: '🎭 문화·사회', url: 'https://news.naver.com/section/103' },
+  science:  { label: '🔬 과학·IT', url: 'https://news.naver.com/section/105' },
+  opinion:  { label: '✍️ 사설·칼럼', url: 'https://news.naver.com/opinion/editorial' },
+};
+
+let currentNewsKey = null;
+let timerInterval = null;
+
+function openInNewTab(url) {
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+function openNews(key) {
+  currentNewsKey = key;
+  const src = NEWS_SOURCES[key];
+  document.getElementById('news-viewer').style.display = 'block';
+  document.getElementById('news-viewer-title').textContent = src.label;
+  document.getElementById('news-viewer-title2').textContent = src.label + ' 뉴스';
+  document.getElementById('news-summary-box').style.display = 'none';
+  document.getElementById('news-summarize-btn').textContent = '✨ AI 요약';
+  document.getElementById('news-summarize-btn').disabled = false;
+  document.getElementById('news-timer').style.display = 'none';
+  document.getElementById('news-viewer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function openCurrentNews() {
+  if (!currentNewsKey) return;
+  openInNewTab(NEWS_SOURCES[currentNewsKey].url);
+}
+
+function closeNewsViewer() {
+  document.getElementById('news-viewer').style.display = 'none';
+  clearInterval(timerInterval);
+  currentNewsKey = null;
+}
+
+async function summarizeNews() {
+  const btn = document.getElementById('news-summarize-btn');
+  const box = document.getElementById('news-summary-box');
+  const txt = document.getElementById('news-summary-text');
+  const timerEl = document.getElementById('news-timer');
+  const src = NEWS_SOURCES[currentNewsKey];
+
+  btn.textContent = '요약 중...';
+  btn.disabled = true;
+  box.style.display = 'block';
+  txt.textContent = '잠시만 기다려주세요...';
+
+  // 타이머 시작 (예상 15초)
+  let elapsed = 0;
+  const estimated = 15;
+  timerEl.style.display = 'inline';
+  timerEl.textContent = `약 ${estimated}초 남음`;
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    elapsed++;
+    const remain = Math.max(estimated - elapsed, 0);
+    timerEl.textContent = remain > 0 ? `약 ${remain}초 남음` : '거의 다 됐어요...';
+  }, 1000);
+
+  const prompt = `당신은 자사고(민족사관고등학교) 입시를 준비하는 중학생을 돕는 AI입니다.
+지금 학생이 보고 있는 뉴스 섹션은 "${src.label}" 분야입니다 (네이버 뉴스: ${src.url}).
+
+이 분야에서 2025~2026년 현재 가장 중요하고 면접·자기소개서에 도움이 될 만한 시사 이슈 3~4가지를 정리해주세요.
+
+각 이슈마다 아래 형식으로 작성해주세요:
+【이슈 제목】
+• 핵심 내용 (2~3문장)
+• 면접 활용 포인트: 이 이슈를 면접에서 어떻게 언급하면 좋을지 한 문장으로
+
+마지막에 "📌 이 분야 공부 팁"을 한 줄 추가해주세요.`;
+
+  try {
+    const res = await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const result = data.content?.map(c => c.text || '').join('') || '요약을 가져오지 못했어요.';
+    txt.textContent = result;
+    btn.textContent = '✨ 다시 요약';
+    btn.disabled = false;
+    clearInterval(timerInterval);
+    timerEl.style.display = 'none';
+  } catch(e) {
+    txt.textContent = '요약 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.';
+    btn.textContent = '✨ AI 요약';
+    btn.disabled = false;
+    clearInterval(timerInterval);
+    timerEl.style.display = 'none';
+  }
+}
+
+function loadNewsMemo() {
+  const el = document.getElementById('news-memo');
+  if (el) el.value = load('newsMemo', '');
+}
+
+// ── Admission Analysis
+let analyzeTimer = null;
+
+async function analyzeAdmission() {
+  const btn = document.getElementById('analyze-btn');
+  const result = document.getElementById('analyze-result');
+  const text = document.getElementById('analyze-text');
+  const timerEl = document.getElementById('analyze-timer');
+  const probNum = document.getElementById('prob-number');
+  const probBar = document.getElementById('prob-bar');
+  const probLabel = document.getElementById('prob-label');
+
+  // 성적 수집 (gradeData 변수에서 직접 읽기)
+  const grades = [];
+  gradeData.forEach((sem, si) => {
+    SUBJECTS.forEach((subj, ji) => {
+      grades.push(`${SEM_NAMES[si]} ${subj.name}: ${gradeData[si][ji]}`);
+    });
+  });
+  const spec = document.getElementById('spec-memo')?.value?.trim() || '';
+
+  if (grades.length === 0 && !spec) {
+    alert('성적 또는 스펙을 먼저 입력해주세요!');
+    return;
+  }
+
+  btn.textContent = '분석 중...';
+  btn.disabled = true;
+  result.style.display = 'block';
+  text.innerHTML = '<div style="color:var(--muted);font-size:13px">⏳ 잠시만 기다려주세요...</div>';
+  probNum.textContent = '0';
+  probBar.style.width = '0%';
+  probLabel.textContent = '';
+  timerEl.textContent = '';
+
+  // 짧고 빠른 프롬프트
+  const prompt = `민족사관고등학교(민사고) 입시 전문가입니다. 아래 학생 스펙을 보고 딱 3가지만 답해주세요.
+
+【성적】${grades.join(', ')}
+【스펙·수상】${spec || '없음'}
+
+반드시 아래 형식 그대로, 다른 말 없이 답변:
+확률: [숫자만]
+한줄평: [현재 수준 한 문장]
+할일1: [지금 당장 1순위로 할 것]
+할일2: [2순위로 할 것]
+할일3: [3순위로 할 것]`;
+
+  try {
+    const res = await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const full = data.content?.map(c => c.text || '').join('') || '';
+
+    // 파싱
+    const probMatch  = full.match(/확률:\s*(\d+)/);
+    const summMatch  = full.match(/한줄평:\s*(.+)/);
+    const todo1Match = full.match(/할일1:\s*(.+)/);
+    const todo2Match = full.match(/할일2:\s*(.+)/);
+    const todo3Match = full.match(/할일3:\s*(.+)/);
+
+    const prob    = probMatch  ? Math.min(100, Math.max(0, parseInt(probMatch[1]))) : 0;
+    const summary = summMatch  ? summMatch[1].trim()  : '';
+    const todo1   = todo1Match ? todo1Match[1].trim() : '';
+    const todo2   = todo2Match ? todo2Match[1].trim() : '';
+    const todo3   = todo3Match ? todo3Match[1].trim() : '';
+
+    // 확률 게이지
+    let barColor, labelText, labelColor;
+    if (prob >= 70) {
+      barColor = 'linear-gradient(90deg,#6ec89a,#a8e8c0)';
+      labelText = '합격 가능성 높음 🎉'; labelColor = 'var(--success)';
+    } else if (prob >= 45) {
+      barColor = 'linear-gradient(90deg,var(--accent),var(--accent2))';
+      labelText = '노력하면 충분히 가능 💪'; labelColor = 'var(--accent)';
+    } else {
+      barColor = 'linear-gradient(90deg,#e06060,#e89090)';
+      labelText = '추가 준비가 필요해요 📚'; labelColor = 'var(--danger)';
+    }
+
+    setTimeout(() => {
+      probNum.textContent = prob;
+      probBar.style.width = prob + '%';
+      probBar.style.background = barColor;
+      probLabel.textContent = labelText;
+      probLabel.style.color = labelColor;
+    }, 100);
+
+    // 결과 카드 렌더링
+    text.innerHTML = `
+      ${summary ? `<div style="font-size:13px;color:var(--text);padding:12px 16px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);margin-bottom:12px;line-height:1.7">
+        📋 ${summary}
+      </div>` : ''}
+      ${(todo1||todo2||todo3) ? `<div style="font-size:12px;color:var(--muted);font-weight:500;margin-bottom:8px;letter-spacing:0.05em">지금 당장 해야 할 것</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${todo1 ? `<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:rgba(224,96,96,0.07);border:1px solid rgba(224,96,96,0.2);border-radius:9px">
+          <span style="font-size:15px;flex-shrink:0">①</span>
+          <span style="font-size:13px;color:var(--text);line-height:1.6">${todo1}</span>
+        </div>` : ''}
+        ${todo2 ? `<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:rgba(200,169,110,0.07);border:1px solid rgba(200,169,110,0.2);border-radius:9px">
+          <span style="font-size:15px;flex-shrink:0">②</span>
+          <span style="font-size:13px;color:var(--text);line-height:1.6">${todo2}</span>
+        </div>` : ''}
+        ${todo3 ? `<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:rgba(110,168,200,0.07);border:1px solid rgba(110,168,200,0.2);border-radius:9px">
+          <span style="font-size:15px;flex-shrink:0">③</span>
+          <span style="font-size:13px;color:var(--text);line-height:1.6">${todo3}</span>
+        </div>` : ''}
+      </div>` : ''}
+    `;
+
+    btn.textContent = '다시 분석';
+    btn.disabled = false;
+    timerEl.textContent = '';
+
+    // 대시보드에 저장
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    save('lastProb', { prob, date: dateStr });
+    updateDashProb();
+  } catch(e) {
+    text.innerHTML = '<div style="color:var(--danger);font-size:13px">분석 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.</div>';
+    btn.textContent = '분석 시작';
+    btn.disabled = false;
+    timerEl.textContent = '';
+  }
+}
+
+function updateDashProb() {
+  const data = load('lastProb', null);
+  const card = document.getElementById('dash-prob-card');
+  const empty = document.getElementById('dash-prob-empty');
+  if (!data) { card.style.display = 'none'; empty.style.display = 'block'; return; }
+
+  card.style.display = 'block';
+  empty.style.display = 'none';
+  document.getElementById('dash-prob-num').textContent = data.prob;
+  document.getElementById('dash-prob-date').textContent = data.date + ' 기준';
+
+  const bar = document.getElementById('dash-prob-bar');
+  const label = document.getElementById('dash-prob-label');
+  setTimeout(() => { bar.style.width = data.prob + '%'; }, 100);
+
+  if (data.prob >= 70) {
+    bar.style.background = 'linear-gradient(90deg,#6ec89a,#a8e8c0)';
+    label.textContent = '합격 가능성 높음'; label.style.color = 'var(--success)';
+    document.getElementById('dash-prob-num').style.color = 'var(--success)';
+  } else if (data.prob >= 45) {
+    bar.style.background = 'linear-gradient(90deg,var(--accent),var(--accent2))';
+    label.textContent = '노력하면 가능'; label.style.color = 'var(--accent)';
+    document.getElementById('dash-prob-num').style.color = 'var(--accent)';
+  } else {
+    bar.style.background = 'linear-gradient(90deg,#e06060,#e89090)';
+    label.textContent = '추가 준비 필요'; label.style.color = 'var(--danger)';
+    document.getElementById('dash-prob-num').style.color = 'var(--danger)';
+  }
+}
+
+
+// ── Clear All Data
+function clearAllData() {
+  if (!confirm('정말로 모든 데이터를 삭제할까요?\n입력한 성적, 세특, 수상, 봉사, 자소서 등 모든 내용이 사라져요.')) return;
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith('minsago_')) keys.push(k);
+  }
+  keys.forEach(k => localStorage.removeItem(k));
+  // inject script도 제거
+  const s = document.getElementById('inject-data');
+  if (s) s.remove();
+  alert('데이터가 모두 삭제됐어요. 페이지를 새로고침하면 초기 상태로 돌아가요.');
+  closeLogin();
+  location.reload();
+}
+
+// ── Login Modal
+function openLogin() { document.getElementById('login-modal').style.display = 'flex'; }
+function closeLogin() { document.getElementById('login-modal').style.display = 'none'; }
+
+// ── File Upload (PDF + Image) — 다중 파일 지원
+let uploadedFiles = []; // { name, base64, type, mediaType, previewUrl }
+let pdfTimer = null;
+
+function handleFileDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-drop-zone').style.borderColor = 'var(--border)';
+  document.getElementById('upload-drop-zone').style.background = '';
+  if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+}
+function handleFileSelect(input) {
+  if (input.files.length) addFiles(input.files);
+  input.value = ''; // 같은 파일 재선택 허용
+}
+
+function addFiles(fileList) {
+  const VALID = /\.(pdf|jpg|jpeg|png|webp)$/i;
+  Array.from(fileList).forEach(file => {
+    if (!VALID.test(file.name)) { showPdfStatus(`"${file.name}" — PDF 또는 JPG·PNG 파일만 가능해요.`, 'danger'); return; }
+    if (file.size > 10 * 1024 * 1024) { showPdfStatus(`"${file.name}" — 10MB를 초과해요.`, 'danger'); return; }
+    // 중복 체크
+    if (uploadedFiles.some(f => f.name === file.name)) { showPdfStatus(`"${file.name}" — 이미 추가된 파일이에요.`, 'danger'); return; }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const b64 = e.target.result.split(',')[1];
+      const isPdf = /\.pdf$/i.test(file.name);
+      let mediaType = isPdf ? 'application/pdf'
+        : /\.png$/i.test(file.name) ? 'image/png'
+        : /\.webp$/i.test(file.name) ? 'image/webp'
+        : 'image/jpeg';
+      uploadedFiles.push({
+        name: file.name,
+        base64: b64,
+        type: isPdf ? 'pdf' : 'image',
+        mediaType,
+        previewUrl: isPdf ? null : e.target.result
+      });
+      renderFileList();
+      showPdfStatus(`✓ ${uploadedFiles.length}개 파일 준비됨. 아래 분석 버튼을 눌러주세요.`, 'success');
+      document.getElementById('pdf-analyze-wrap').style.display = 'block';
+      document.getElementById('upload-drop-zone').style.borderColor = 'rgba(110,200,154,0.4)';
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function removeFile(idx) {
+  uploadedFiles.splice(idx, 1);
+  renderFileList();
+  if (uploadedFiles.length === 0) {
+    document.getElementById('file-list-wrap').style.display = 'none';
+    document.getElementById('pdf-analyze-wrap').style.display = 'none';
+    document.getElementById('pdf-status').style.display = 'none';
+    document.getElementById('upload-drop-zone').style.borderColor = 'var(--border)';
+  } else {
+    showPdfStatus(`✓ ${uploadedFiles.length}개 파일 준비됨.`, 'success');
+  }
+}
+
+function clearAllFiles() {
+  uploadedFiles = [];
+  renderFileList();
+  document.getElementById('file-list-wrap').style.display = 'none';
+  document.getElementById('pdf-analyze-wrap').style.display = 'none';
+  document.getElementById('pdf-status').style.display = 'none';
+  document.getElementById('upload-drop-zone').style.borderColor = 'var(--border)';
+}
+
+function renderFileList() {
+  const wrap = document.getElementById('file-list-wrap');
+  const list = document.getElementById('file-list');
+  if (!wrap || !list) return;
+  if (uploadedFiles.length === 0) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  list.innerHTML = '';
+  uploadedFiles.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--surface2);border-radius:8px;margin-bottom:6px;border:1px solid var(--border)';
+    const icon = f.type === 'pdf' ? '📄' : '🖼️';
+    const previewHtml = f.previewUrl
+      ? `<img src="${f.previewUrl}" style="width:40px;height:40px;object-fit:cover;border-radius:5px;border:1px solid var(--border);flex-shrink:0">`
+      : `<div style="width:40px;height:40px;background:rgba(110,168,200,0.1);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">${icon}</div>`;
+    row.innerHTML = `
+      ${previewHtml}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.name}</div>
+        <div style="font-size:11px;color:var(--muted)">${f.type === 'pdf' ? 'PDF 문서' : '이미지'}</div>
+      </div>
+      <button onclick="removeFile(${i})" title="삭제"
+        style="background:none;border:1px solid transparent;color:var(--muted);font-size:16px;cursor:pointer;padding:4px 8px;border-radius:6px;flex-shrink:0;transition:all 0.15s"
+        onmouseover="this.style.color='var(--danger)';this.style.borderColor='rgba(224,96,96,0.3)';this.style.background='rgba(224,96,96,0.08)'"
+        onmouseout="this.style.color='var(--muted)';this.style.borderColor='transparent';this.style.background='none'">✕</button>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function showPdfStatus(msg, type) {
+  const el = document.getElementById('pdf-status');
+  el.style.display = 'block'; el.textContent = msg;
+  el.style.background = type === 'success' ? 'rgba(110,200,154,0.1)' : 'rgba(224,96,96,0.1)';
+  el.style.color = type === 'success' ? 'var(--success)' : 'var(--danger)';
+  el.style.border = `1px solid ${type === 'success' ? 'rgba(110,200,154,0.3)' : 'rgba(224,96,96,0.3)'}`;
+}
+
+function startAnalyzeTimer() {
+  let elapsed = 0;
+  clearInterval(pdfTimer);
+  pdfTimer = setInterval(() => { elapsed++; const r=Math.max(40-elapsed,0); document.getElementById('pdf-timer').textContent=r>0?`약 ${r}초 남음`:'거의 다 됐어요...'; }, 1000);
+}
+function stopAnalyzeTimer() { clearInterval(pdfTimer); document.getElementById('pdf-timer').textContent = ''; }
+
+function buildFileContent(promptText) {
+  // 파일이 여러 개면 모두 포함
+  const parts = [];
+  uploadedFiles.forEach(f => {
+    if (f.type === 'pdf') {
+      parts.push({ type:'document', source:{ type:'base64', media_type:'application/pdf', data:f.base64 } });
+    } else {
+      parts.push({ type:'image', source:{ type:'base64', media_type:f.mediaType, data:f.base64 } });
+    }
+  });
+  parts.push({ type:'text', text: promptText });
+  return parts;
+}
+
+// 기존 단일파일 참조 호환
+function setFileType() {} // 더 이상 사용 안 함 (타입 자동 감지)
+
+async function analyzeFile(mode) {
+  if (!uploadedFiles.length) return;
+  const btnIds = ['pdf-analyze-btn','sespec-analyze-btn','both-analyze-btn'];
+  btnIds.forEach(id => { const b=document.getElementById(id); if(b){b.disabled=true;b.style.opacity='0.5';} });
+  startAnalyzeTimer();
+
+  if (mode === 'grades' || mode === 'both') {
+    showPdfStatus('성적을 분석하고 있어요...', 'success');
+    const prompt = `이 생활기록부에서 교과 성적 정보를 추출해주세요. 다음 JSON 형식으로만 답변하세요(다른 텍스트 없이):
+{"semesters":[{"name":"중2-1학기","grades":{"국어":"A","수학":"A","영어":"A","사회/역사":"A","과학":"A","체육":"A","음악/미술":"A"}},{"name":"중2-2학기","grades":{"국어":"A","수학":"A","영어":"A","사회/역사":"A","과학":"A","체육":"A","음악/미술":"A"}},{"name":"중3-1학기","grades":{"국어":"A","수학":"A","영어":"A","사회/역사":"A","과학":"A","체육":"A","음악/미술":"A"}},{"name":"중3-2학기","grades":{"국어":"A","수학":"A","영어":"A","사회/역사":"A","과학":"A","체육":"A","음악/미술":"A"}}],"absent_days":0,"late_count":0}
+성취도는 A/B/C/D/E 중 하나. 없는 정보는 기본값 A.`;
+    try {
+      const res = await fetch('/api/claude', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user', content:buildFileContent(prompt)}] })
+      });
+      const data = await res.json();
+      const raw = data.content?.map(c=>c.text||'').join('') || '';
+      const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+      const subjectMap = {'국어':0,'수학':1,'영어':2,'사회/역사':3,'과학':4,'체육':5,'음악/미술':6};
+      parsed.semesters.forEach((sem,si) => {
+        if (!gradeData[si]) return;
+        Object.entries(sem.grades).forEach(([subj,grade]) => {
+          const idx = subjectMap[subj];
+          if (idx!==undefined && ['A','B','C','D','E'].includes(grade)) gradeData[si][idx] = grade;
+        });
+      });
+      if (parsed.absent_days) document.getElementById('absent-days').value = parsed.absent_days;
+      if (parsed.late_count) document.getElementById('late-count').value = parsed.late_count;
+      renderSemPanels(); showSem(0, document.querySelectorAll('.sem-tab')[0]);
+      calcTotalScore(); calcAbsent(); saveGrades();
+      if (mode==='grades') showPdfStatus('✓ 성적 자동 입력 완료! 성적 탭에서 확인·수정해보세요.', 'success');
+    } catch(e) { showPdfStatus('성적 분석 중 오류가 발생했어요.', 'danger'); }
+  }
+
+  if (mode === 'sespec' || mode === 'both') {
+    if (mode==='both') showPdfStatus('✓ 성적 완료! 이어서 세특을 분석하고 있어요...', 'success');
+    else showPdfStatus('세특 내용을 분석하고 있어요...', 'success');
+    const prompt = `이 생활기록부에서 세부능력특기사항(세특) 정보를 추출해주세요. 다음 JSON 형식으로만 답변하세요(다른 텍스트 없이):
+{"theme1":"추출된 주된 탐구 테마","theme2":"부수적 테마","subjects":[{"subject":"과목명","inquiry":"탐구 주제와 내용 요약","note":"면접에서 나올 수 있는 핵심 개념"}],"club":"동아리 활동 내용","volunteer":"봉사 활동 내용"}
+세특이 없거나 읽을 수 없으면 빈 문자열로. subjects는 세특이 기재된 과목만.`;
+    try {
+      const res = await fetch('/api/claude', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1500, messages:[{role:'user', content:buildFileContent(prompt)}] })
+      });
+      const data = await res.json();
+      const raw = data.content?.map(c=>c.text||'').join('') || '';
+      const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+      if (parsed.theme1) { const el=document.getElementById('sespec-theme1'); if(el) el.value=parsed.theme1; }
+      if (parsed.theme2) { const el=document.getElementById('sespec-theme2'); if(el) el.value=parsed.theme2; }
+      if (parsed.club)   { const el=document.getElementById('sespec-club');    if(el) el.value=parsed.club; }
+      if (parsed.volunteer) { const el=document.getElementById('sespec-volunteer'); if(el) el.value=parsed.volunteer; }
+      if (parsed.subjects?.length) { sespecSubjects = parsed.subjects.map(s=>({subject:s.subject||'',inquiry:s.inquiry||'',note:s.note||''})); renderSespec(); }
+      saveSespec();
+      showPdfStatus(mode==='both'?'✓ 성적 + 세특 자동 입력 완료! 각 탭에서 확인·수정해보세요.':'✓ 세특 자동 입력 완료! 세특 탭에서 확인·수정해보세요.', 'success');
+    } catch(e) { showPdfStatus((mode==='both'?'성적은 완료됐어요. ':'')+'세특 분석 중 오류가 발생했어요.', 'danger'); }
+  }
+
+  stopAnalyzeTimer();
+  btnIds.forEach(id => { const b=document.getElementById(id); if(b){b.disabled=false;b.style.opacity='1';} });
+  document.getElementById('pdf-analyze-btn').textContent = '✨ 성적 다시 분석';
+  document.getElementById('sespec-analyze-btn').textContent = '✨ 세특 다시 분석';
+  document.getElementById('both-analyze-btn').textContent = '✨ 성적 + 세특 다시 분석';
+}
+
+// ── Sespec (세특)
+let sespecSubjects = [];
+function addSespecSubject() {
+  sespecSubjects.push({ subject:'', inquiry:'', note:'' });
+  renderSespec(); saveSespec();
+}
+function renderSespec() {
+  const list = document.getElementById('sespec-list');
+  if (!list) return;
+  list.innerHTML = '';
+  sespecSubjects.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.style.cssText = 'border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px;background:var(--surface2)';
+    div.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <input value="${item.subject}" placeholder="과목명 (예: 수학)" oninput="sespecSubjects[${i}].subject=this.value;saveSespec()"
+          style="background:transparent;border:none;color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:500;outline:none;flex:1">
+        <button onclick="sespecSubjects.splice(${i},1);renderSespec();saveSespec()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:4px">탐구 주제·내용</div>
+          <textarea oninput="sespecSubjects[${i}].inquiry=this.value;saveSespec()" placeholder="어떤 내용을 탐구했는지..."
+            style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:8px;border-radius:7px;resize:vertical;min-height:70px;outline:none">${item.inquiry}</textarea>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:4px">면접 꼬리질문 대비</div>
+          <textarea oninput="sespecSubjects[${i}].note=this.value;saveSespec()" placeholder="예상 꼬리질문과 답변..."
+            style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:8px;border-radius:7px;resize:vertical;min-height:70px;outline:none">${item.note}</textarea>
+        </div>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+function saveSespec() {
+  save('sespecSubjects', sespecSubjects);
+  save('sespecTheme1', document.getElementById('sespec-theme1')?.value || '');
+  save('sespecTheme2', document.getElementById('sespec-theme2')?.value || '');
+  save('sespecClub', document.getElementById('sespec-club')?.value || '');
+  save('sespecVolunteer', document.getElementById('sespec-volunteer')?.value || '');
+}
+function loadSespec() {
+  sespecSubjects = load('sespecSubjects', []);
+  renderSespec();
+  const t1=document.getElementById('sespec-theme1'); if(t1) t1.value=load('sespecTheme1','');
+  const t2=document.getElementById('sespec-theme2'); if(t2) t2.value=load('sespecTheme2','');
+  const cl=document.getElementById('sespec-club'); if(cl) cl.value=load('sespecClub','');
+  const vo=document.getElementById('sespec-volunteer'); if(vo) vo.value=load('sespecVolunteer','');
+}
+
+// ── Books (독서)
+let books = [];
+function addBook() {
+  books.push({ title:'', author:'', lang:'ko', summary:'', change:'', interview:'' });
+  renderBooks(); saveBooks();
+}
+function renderBooks() {
+  const list = document.getElementById('book-list');
+  if (!list) return;
+  list.innerHTML = '';
+  books.forEach((book, i) => {
+    const div = document.createElement('div');
+    div.className = 'card'; div.style.marginBottom = '16px';
+    div.innerHTML = `
+      <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:12px">
+        <div style="flex:3"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">책 제목</div>
+          <input value="${book.title}" placeholder="책 제목" oninput="books[${i}].title=this.value;saveBooks()"
+            style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:500;padding:7px 12px;border-radius:8px;outline:none"></div>
+        <div style="flex:2"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">저자</div>
+          <input value="${book.author}" placeholder="저자명" oninput="books[${i}].author=this.value;saveBooks()"
+            style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:13px;padding:7px 12px;border-radius:8px;outline:none"></div>
+        <div style="flex:1"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">언어</div>
+          <select onchange="books[${i}].lang=this.value;renderBooks();saveBooks()"
+            style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:13px;padding:7px 8px;border-radius:8px;outline:none">
+            <option value="ko" ${book.lang==='ko'?'selected':''}>한국어</option>
+            <option value="en" ${book.lang==='en'?'selected':''}>영어 ★</option>
+          </select></div>
+        <button onclick="books.splice(${i},1);renderBooks();saveBooks()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px;margin-bottom:2px">✕</button>
+      </div>
+      ${book.lang==='en'?'<div style="margin-bottom:10px;font-size:11px;color:var(--accent);padding:5px 10px;background:rgba(200,169,110,0.08);border-radius:6px">⭐ 영어 도서 — 자소서 독서 소감 필수 1권</div>':''}
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <div><div style="font-size:11px;color:var(--muted);margin-bottom:4px">핵심 내용 요약</div>
+          <textarea oninput="books[${i}].summary=this.value;saveBooks()" placeholder="책의 핵심 논지..."
+            style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:8px;border-radius:7px;resize:vertical;min-height:80px;outline:none">${book.summary}</textarea></div>
+        <div><div style="font-size:11px;color:var(--accent);margin-bottom:4px">생각의 변화 ★ (자소서 핵심)</div>
+          <textarea oninput="books[${i}].change=this.value;saveBooks()" placeholder="읽기 전 vs 읽은 후 내 생각이 어떻게 달라졌는지..."
+            style="width:100%;background:var(--surface2);border:1px solid rgba(200,169,110,0.2);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:8px;border-radius:7px;resize:vertical;min-height:80px;outline:none">${book.change}</textarea></div>
+        <div><div style="font-size:11px;color:var(--info);margin-bottom:4px">면접 꼬리질문 대비</div>
+          <textarea oninput="books[${i}].interview=this.value;saveBooks()" placeholder="예상 질문과 내 답변..."
+            style="width:100%;background:var(--surface2);border:1px solid rgba(110,168,200,0.2);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:8px;border-radius:7px;resize:vertical;min-height:80px;outline:none">${book.interview}</textarea></div>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+function saveBooks() { save('books', books); }
+function loadBooks() { books = load('books', []); renderBooks(); }
+
+
+// ── School Life: Awards
+let awards = [];
+function addAward() {
+  awards.push({ name:'', type:'교내', date:'', result:'', note:'' });
+  renderAwards(); saveSchoolLife();
+}
+function renderAwards() {
+  const list = document.getElementById('awards-list');
+  if (!list) return;
+  if (awards.length === 0) { list.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:12px 0">아직 없어요. + 추가를 눌러주세요.</div>'; return; }
+  list.innerHTML = '';
+  awards.forEach((a, i) => {
+    const div = document.createElement('div');
+    div.className = 'sl-item';
+    div.style.gridTemplateColumns = '1fr';
+    div.innerHTML = `
+      <div class="sl-item-header">
+        <select onchange="awards[${i}].type=this.value;saveSchoolLife()" style="width:90px;flex-shrink:0">
+          <option ${a.type==='교내'?'selected':''}>교내</option>
+          <option ${a.type==='교외'?'selected':''}>교외</option>
+        </select>
+        <input value="${a.name}" placeholder="대회·수상명" oninput="awards[${i}].name=this.value;saveSchoolLife()" style="flex:1">
+        <input type="date" value="${a.date}" onchange="awards[${i}].date=this.value;saveSchoolLife()" style="width:140px;flex-shrink:0">
+        <button onclick="awards.splice(${i},1);renderAwards();saveSchoolLife()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;flex-shrink:0">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px">
+        <div><div class="sl-label">결과 (예: 금상, 1위)</div>
+          <input value="${a.result}" placeholder="결과" oninput="awards[${i}].result=this.value;saveSchoolLife()"></div>
+        <div><div class="sl-label">메모 (자소서·면접 활용 포인트)</div>
+          <input value="${a.note}" placeholder="이 수상을 어떻게 활용할지..." oninput="awards[${i}].note=this.value;saveSchoolLife()"></div>
+      </div>
+      ${a.type==='교외'?'<div style="font-size:11px;color:var(--danger)">⚠️ 교외상은 생기부 기재 불가 — 자소서에서만 활용 가능</div>':''}
+    `;
+    list.appendChild(div);
+  });
+}
+
+// ── School Life: Clubs
+let clubs = [];
+function addClub() {
+  clubs.push({ name:'', role:'', period:'', activity:'', selfdirected:'' });
+  renderClubs(); saveSchoolLife();
+}
+function renderClubs() {
+  const list = document.getElementById('clubs-list');
+  if (!list) return;
+  if (clubs.length === 0) { list.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:12px 0">아직 없어요. + 추가를 눌러주세요.</div>'; return; }
+  list.innerHTML = '';
+  clubs.forEach((c, i) => {
+    const div = document.createElement('div');
+    div.className = 'sl-item';
+    div.innerHTML = `
+      <div class="sl-item-header">
+        <input value="${c.name}" placeholder="동아리명" oninput="clubs[${i}].name=this.value;saveSchoolLife()" style="flex:2;font-weight:500">
+        <input value="${c.role}" placeholder="역할 (예: 부장, 기획)" oninput="clubs[${i}].role=this.value;saveSchoolLife()" style="flex:1">
+        <input value="${c.period}" placeholder="활동 기간" oninput="clubs[${i}].period=this.value;saveSchoolLife()" style="flex:1">
+        <button onclick="clubs.splice(${i},1);renderClubs();saveSchoolLife()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;flex-shrink:0">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><div class="sl-label">주요 활동 내용</div>
+          <textarea oninput="clubs[${i}].activity=this.value;saveSchoolLife()" placeholder="어떤 활동을 했는지..." style="min-height:60px">${c.activity}</textarea></div>
+        <div><div class="sl-label">자기주도 포인트 ★ (기획·발표·실험 설계 등)</div>
+          <textarea oninput="clubs[${i}].selfdirected=this.value;saveSchoolLife()" placeholder="내가 주도적으로 한 역할..." style="min-height:60px;border-color:rgba(200,169,110,0.3)">${c.selfdirected}</textarea></div>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+// ── School Life: Volunteers
+let volunteers = [];
+function addVolunteer() {
+  volunteers.push({ name:'', hours:0, period:'', content:'', spirit:'' });
+  renderVolunteers(); saveSchoolLife();
+}
+function renderVolunteers() {
+  const list = document.getElementById('volunteers-list');
+  if (!list) return;
+  if (volunteers.length === 0) { list.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:12px 0">아직 없어요. + 추가를 눌러주세요.</div>'; return; }
+  list.innerHTML = '';
+  volunteers.forEach((v, i) => {
+    const div = document.createElement('div');
+    div.className = 'sl-item';
+    div.innerHTML = `
+      <div class="sl-item-header">
+        <input value="${v.name}" placeholder="봉사 활동명" oninput="volunteers[${i}].name=this.value;saveSchoolLife()" style="flex:2;font-weight:500">
+        <input type="number" value="${v.hours||''}" placeholder="시간" oninput="volunteers[${i}].hours=this.value;saveSchoolLife()" style="width:80px;flex-shrink:0">
+        <span style="font-size:12px;color:var(--muted);flex-shrink:0">시간</span>
+        <input value="${v.period}" placeholder="기간" oninput="volunteers[${i}].period=this.value;saveSchoolLife()" style="flex:1">
+        <button onclick="volunteers.splice(${i},1);renderVolunteers();saveSchoolLife()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;flex-shrink:0">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><div class="sl-label">활동 내용</div>
+          <textarea oninput="volunteers[${i}].content=this.value;saveSchoolLife()" placeholder="무엇을 했는지..." style="min-height:60px">${v.content}</textarea></div>
+        <div><div class="sl-label">이타심·지속성 포인트 ★ (촛불 정신)</div>
+          <textarea oninput="volunteers[${i}].spirit=this.value;saveSchoolLife()" placeholder="왜 꾸준히 했는지, 어떤 마음으로..." style="min-height:60px;border-color:rgba(200,169,110,0.3)">${v.spirit}</textarea></div>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function saveSchoolLife() {
+  save('awards', awards);
+  save('clubs', clubs);
+  save('volunteers', volunteers);
+}
+function loadSchoolLife() {
+  awards = load('awards', []); renderAwards();
+  clubs = load('clubs', []); renderClubs();
+  volunteers = load('volunteers', []); renderVolunteers();
+}
+
+// ── Analysis Summary
+function updateAnalysisSummary() {
+  // 성적
+  const scoreEl = document.getElementById('analysis-score');
+  const totalEl = document.getElementById('total-score');
+  if (scoreEl && totalEl) scoreEl.textContent = totalEl.textContent !== '-' ? totalEl.textContent : '-';
+
+  // 활동 수
+  const actEl = document.getElementById('analysis-activities');
+  if (actEl) actEl.textContent = awards.length + clubs.length + volunteers.length;
+
+  // 세특+독서
+  const spEl = document.getElementById('analysis-sespec');
+  if (spEl) spEl.textContent = sespecSubjects.length + books.length;
+
+  // 준비 현황
+  const clDiv = document.getElementById('analysis-checklist');
+  if (!clDiv) return;
+  const items = [
+    { label:'성적 입력', ok: document.getElementById('total-score')?.textContent !== '-' },
+    { label:'대회·수상', ok: awards.length > 0 },
+    { label:'동아리 활동', ok: clubs.length > 0 },
+    { label:'봉사 활동', ok: volunteers.length > 0 },
+    { label:'세특 콘셉트', ok: !!(load('sespecTheme1','')) },
+    { label:'세특 과목 기록', ok: sespecSubjects.length > 0 },
+    { label:'독서 기록', ok: books.length >= 1 },
+    { label:'영어 도서', ok: books.some(b => b.lang === 'en') },
+    { label:'자소서 교과학습', ok: !!(load('essay_0','')) },
+    { label:'자소서 독서 소감', ok: !!(load('essay_4','')) },
+    { label:'면접 답변 연습', ok: document.querySelectorAll('.answer-area').length > 0 && [...document.querySelectorAll('.answer-area')].some(a => a.value.length > 10) },
+    { label:'셔틀런 준비', ok: false },
+  ];
+  clDiv.innerHTML = items.map(item => `
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface2);border-radius:8px;font-size:13px">
+      <span style="color:${item.ok ? 'var(--success)' : 'var(--danger)'};font-size:16px">${item.ok ? '✓' : '○'}</span>
+      <span style="color:${item.ok ? 'var(--text)' : 'var(--muted)'}">${item.label}</span>
+    </div>
+  `).join('');
+}
+
+// ── Analysis Run
+let analysisTimer = null;
+async function runAnalysis() {
+  const btn = document.getElementById('analysis-btn');
+  const result = document.getElementById('analysis-result');
+  const text = document.getElementById('analysis-text');
+  const timerEl = document.getElementById('analysis-timer');
+  const probNum = document.getElementById('analysis-prob-num');
+  const probBar = document.getElementById('analysis-prob-bar');
+  const probLabel = document.getElementById('analysis-prob-label');
+
+  btn.textContent = '분석 중...'; btn.disabled = true;
+  result.style.display = 'block';
+  text.textContent = '잠시만 기다려주세요...';
+  probNum.textContent = '0'; probBar.style.width = '0%'; probLabel.textContent = '';
+
+  let elapsed = 0;
+  clearInterval(analysisTimer);
+  analysisTimer = setInterval(() => { elapsed++; const r=Math.max(25-elapsed,0); timerEl.textContent=r>0?`약 ${r}초 남음`:'거의 다 됐어요...'; }, 1000);
+
+  // 데이터 수집
+  const scoreText = document.getElementById('total-score')?.textContent || '-';
+  const absentText = document.getElementById('absent-result')?.textContent || '';
+  const specText = document.getElementById('spec-memo')?.value || '';
+  const theme1 = load('sespecTheme1','');
+  const theme2 = load('sespecTheme2','');
+  const essayDone = [0,1,2,3,4].filter(i => (load('essay_'+i,'') || '').length > 30).length;
+  const englishBook = books.some(b => b.lang === 'en');
+
+  const prompt = `당신은 민족사관고등학교(민사고) 입시 전문 컨설턴트입니다.
+아래 학생의 전체 스펙을 보고 민사고 합격 가능성을 종합 분석해주세요.
+
+【성적】
+교과 환산 점수: ${scoreText} / 40점
+${absentText}
+
+【세특 콘셉트】
+주된 테마: ${theme1 || '미입력'}
+부수적 테마: ${theme2 || '미입력'}
+세특 기록 과목 수: ${sespecSubjects.length}개
+
+【대회·수상】 총 ${awards.length}개
+${awards.map(a=>`- [${a.type}] ${a.name} ${a.result}`).join('\n') || '없음'}
+
+【동아리】 총 ${clubs.length}개
+${clubs.map(c=>`- ${c.name} (${c.role}) — ${c.selfdirected||c.activity}`).join('\n') || '없음'}
+
+【봉사】 총 ${volunteers.length}개
+${volunteers.map(v=>`- ${v.name} ${v.hours}시간 — ${v.spirit||v.content}`).join('\n') || '없음'}
+
+【독서】 총 ${books.length}권 (영어도서: ${englishBook?'있음':'없음'})
+${books.map(b=>`- [${b.lang==='en'?'영어':'한국어'}] ${b.title}`).join('\n') || '없음'}
+
+【자소서 작성 현황】 5개 항목 중 ${essayDone}개 작성 완료
+
+다음 형식으로 정확히 답변해주세요:
+
+합격확률: [숫자만]
+
+【종합 평가】
+현재 스펙의 전반적인 수준 (3문장)
+
+【강점 TOP 3】
+• 강점과 구체적 이유
+• 강점과 구체적 이유
+• 강점과 구체적 이유
+
+【보완 필요 항목】
+• 부족한 점과 구체적 개선 방법
+• 부족한 점과 구체적 개선 방법
+
+【지금 당장 해야 할 것 TOP 3】
+① 가장 급한 것
+② 두 번째
+③ 세 번째
+
+※ 합격자 평균(올A, KMO·과학올림피아드 경험, 독서 3권, 세특 일관성, 면접 준비)과 비교해 현실적으로 평가해주세요.`;
+
+  try {
+    const res = await fetch('/api/claude', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1200,
+        messages:[{ role:'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const full = data.content?.map(c=>c.text||'').join('') || '';
+    const match = full.match(/합격확률:\s*(\d+)/);
+    const prob = match ? Math.min(100, Math.max(0, parseInt(match[1]))) : 0;
+    const body = full.replace(/합격확률:\s*\d+\n?/,'').trim();
+
+    setTimeout(() => {
+      probNum.textContent = prob;
+      probBar.style.width = prob + '%';
+      if (prob >= 70) { probBar.style.background='linear-gradient(90deg,#6ec89a,#a8e8c0)'; probLabel.textContent='합격 가능성 높음'; probLabel.style.color='var(--success)'; probNum.style.color='var(--success)'; }
+      else if (prob >= 45) { probBar.style.background='linear-gradient(90deg,var(--accent),var(--accent2))'; probLabel.textContent='노력하면 가능'; probLabel.style.color='var(--accent)'; probNum.style.color='var(--accent)'; }
+      else { probBar.style.background='linear-gradient(90deg,#e06060,#e89090)'; probLabel.textContent='추가 준비 필요'; probLabel.style.color='var(--danger)'; probNum.style.color='var(--danger)'; }
+    }, 100);
+
+    text.textContent = body;
+    // 대시보드 확률도 업데이트
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    save('lastProb', { prob, date: dateStr });
+    updateDashProb();
+
+    btn.textContent = '다시 분석'; btn.disabled = false;
+    clearInterval(analysisTimer); timerEl.textContent = '';
+  } catch(e) {
+    text.textContent = '분석 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.';
+    btn.textContent = '분석 시작'; btn.disabled = false;
+    clearInterval(analysisTimer); timerEl.textContent = '';
+  }
+}
+
+
+// ══════════════════════════════════════
+//  초기화 (페이지 로드 시)
+// ══════════════════════════════════════
+window.onload = () => {
+  // 이전 개인 데이터가 남아있으면 초기화
+  const version = localStorage.getItem('minsago_appVersion');
+  if (version !== 'v2-clean') {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('minsago_')) localStorage.removeItem(k);
+    }
+    localStorage.setItem('minsago_appVersion', 'v2-clean');
+  }
+
+  initDate();
+  loadDashTasks();
+  loadCL();
+  loadGrades();
+  loadEssays();
+  loadAnswers();
+  loadStrategyMemo();
+  loadNewsMemo();
+  updateDashProb();
+  loadSespec();
+  loadBooks();
+  loadSchoolLife();
+
+  // 마지막으로 보던 탭 복원
+  const lastTab = load('activeTab', 'dashboard');
+  const tabBtn = [...document.querySelectorAll('.nav-tab')].find(b =>
+    b.getAttribute('onclick') && b.getAttribute('onclick').includes(`'${lastTab}'`)
+  );
+  if (tabBtn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(lastTab).classList.add('active');
+    tabBtn.classList.add('active');
+  }
+};
+</script>
+<!-- ════════════ LOGIN MODAL ════════════ -->
+<div id="login-modal" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);align-items:center;justify-content:center">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:36px;width:100%;max-width:400px;margin:24px;position:relative">
+    <button onclick="closeLogin()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1">×</button>
+
+    <div style="font-family:'Noto Serif KR',serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:6px">로그인</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:28px">로그인하면 데이터가 클라우드에 자동저장돼요</div>
+
+    <div style="padding:16px;background:rgba(200,169,110,0.07);border:1px solid rgba(200,169,110,0.2);border-radius:10px;margin-bottom:24px;font-size:12px;color:var(--muted);line-height:1.8">
+      🚧 <strong style="color:var(--accent)">준비 중인 기능이에요</strong><br>
+      현재는 localStorage(이 기기)에 자동저장 중이에요.<br>
+      클라우드 로그인 기능은 추후 업데이트 예정이에요.
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">이메일</div>
+      <input type="email" placeholder="example@email.com" disabled
+        style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:10px 14px;border-radius:9px;outline:none;cursor:not-allowed;opacity:0.6">
+    </div>
+    <div style="margin-bottom:24px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">비밀번호</div>
+      <input type="password" placeholder="••••••••" disabled
+        style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:10px 14px;border-radius:9px;outline:none;cursor:not-allowed;opacity:0.6">
+    </div>
+
+    <button disabled style="width:100%;background:var(--surface2);border:none;color:var(--muted);font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;padding:12px;border-radius:9px;cursor:not-allowed;opacity:0.6;margin-bottom:12px">
+      로그인 (준비 중)
+    </button>
+    <div style="text-align:center;font-size:12px;color:var(--muted)">현재 이 기기에 자동저장 중 · 데이터 손실 없음</div>
+  </div>
+</div>
+
+</body>
+</html>
