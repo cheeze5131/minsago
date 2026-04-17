@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>민사고 합격 프로젝트</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -715,7 +716,7 @@
     </div>
 
   </div>
-  <button onclick="openLogin()" class="login-btn">🔒 로그인</button>
+  <button id="nav-login-btn" onclick="openLogin()" class="login-btn">로그인</button>
   <button class="nav-hamburger" onclick="toggleMobileMenu()" id="hamburger-btn">☰</button>
 </nav>
 
@@ -1785,7 +1786,7 @@ function addToGCal(title, startDate, endDate, details) {
 // ══════════════════════════════════════
 //  저장 / 불러오기 헬퍼
 // ══════════════════════════════════════
-function save(key, value) { try { localStorage.setItem('minsago_' + key, JSON.stringify(value)); } catch(e){} }
+function save(key, value) { try { localStorage.setItem('minsago_' + key, JSON.stringify(value)); } catch(e){} if(typeof scheduleSync==='function') scheduleSync(); }
 function load(key, fallback) { try { const v = localStorage.getItem('minsago_' + key); return v !== null ? JSON.parse(v) : fallback; } catch(e){ return fallback; } }
 
 // ── Nav & Sections
@@ -3171,35 +3172,158 @@ window.onload = () => {
   }
 };
 </script>
+<script>
+// ══════════════════════════════════════
+//  Supabase 인증 & 클라우드 동기화
+// ══════════════════════════════════════
+const SUPABASE_URL = 'https://wcmkcdltcqolnoqybuzs.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjbWtjZGx0Y3FvbG5vcXlidXpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzOTk0NjMsImV4cCI6MjA5MTk3NTQ2M30.qbZ2qO-6KwsPg1YekudYRrrp4lxWsJgU6gfICfqDhE8';
+const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let _syncTimer = null;
+
+function scheduleSync() {
+  if (!currentUser) return;
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(syncToCloud, 2000);
+}
+
+async function syncToCloud() {
+  if (!currentUser) return;
+  const data = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith('minsago_')) {
+      try { data[k] = JSON.parse(localStorage.getItem(k)); } catch(e) { data[k] = localStorage.getItem(k); }
+    }
+  }
+  await _sb.from('user_data').upsert({ user_id: currentUser.id, data, updated_at: new Date().toISOString() });
+}
+
+async function loadFromCloud() {
+  if (!currentUser) return;
+  const { data: row } = await _sb.from('user_data').select('data').eq('user_id', currentUser.id).single();
+  if (row?.data) {
+    Object.entries(row.data).forEach(([k, v]) => {
+      try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {}
+    });
+    location.reload();
+  }
+}
+
+function updateLoginUI() {
+  const btn = document.getElementById('nav-login-btn');
+  if (currentUser) {
+    if (btn) btn.textContent = '✓ ' + currentUser.email.split('@')[0];
+    const msg = document.getElementById('login-status-msg');
+    if (msg) msg.textContent = currentUser.email + ' · 자동저장 켜짐';
+    const fw = document.getElementById('login-form-wrap');
+    const lw = document.getElementById('login-logged-wrap');
+    if (fw) fw.style.display = 'none';
+    if (lw) lw.style.display = 'block';
+  } else {
+    if (btn) btn.textContent = '로그인';
+    const msg = document.getElementById('login-status-msg');
+    if (msg) msg.textContent = '현재 이 기기에만 저장 중';
+    const fw = document.getElementById('login-form-wrap');
+    const lw = document.getElementById('login-logged-wrap');
+    if (fw) fw.style.display = 'block';
+    if (lw) lw.style.display = 'none';
+  }
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  if (!email || !password) { errEl.textContent = '이메일과 비밀번호를 입력해 주세요.'; return; }
+  errEl.textContent = '';
+  const btn = document.getElementById('login-submit-btn');
+  btn.textContent = '로그인 중...'; btn.disabled = true;
+  const { error } = await _sb.auth.signInWithPassword({ email, password });
+  btn.textContent = '로그인'; btn.disabled = false;
+  if (error) errEl.textContent = error.message === 'Invalid login credentials' ? '이메일 또는 비밀번호가 틀렸어요.' : error.message;
+}
+
+async function doSignup() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  if (!email || !password) { errEl.textContent = '이메일과 비밀번호를 입력해 주세요.'; return; }
+  if (password.length < 6) { errEl.textContent = '비밀번호는 6자 이상이어야 해요.'; return; }
+  errEl.textContent = '';
+  const btn = document.getElementById('signup-submit-btn');
+  btn.textContent = '처리 중...'; btn.disabled = true;
+  const { error } = await _sb.auth.signUp({ email, password });
+  btn.textContent = '회원가입'; btn.disabled = false;
+  if (error) { errEl.textContent = error.message; }
+  else { errEl.style.color = 'var(--success)'; errEl.textContent = '가입 완료! 이메일을 확인 후 로그인해 주세요.'; }
+}
+
+async function doLogout() {
+  await _sb.auth.signOut();
+  closeLogin();
+}
+
+// 인증 상태 변경 감지
+_sb.auth.onAuthStateChange(async (event, session) => {
+  currentUser = session?.user ?? null;
+  updateLoginUI();
+  if (event === 'SIGNED_IN') {
+    await loadFromCloud();
+    closeLogin();
+  }
+});
+
+// 페이지 로드 시 기존 세션 확인
+(async () => {
+  const { data: { session } } = await _sb.auth.getSession();
+  currentUser = session?.user ?? null;
+  updateLoginUI();
+})();
+</script>
 <!-- ════════════ LOGIN MODAL ════════════ -->
 <div id="login-modal" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);align-items:center;justify-content:center">
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:36px;width:100%;max-width:400px;margin:24px;position:relative">
     <button onclick="closeLogin()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1">×</button>
 
     <div style="font-family:'Noto Serif KR',serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:6px">로그인</div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:28px">로그인하면 데이터가 클라우드에 자동저장돼요</div>
+    <div id="login-status-msg" style="font-size:13px;color:var(--muted);margin-bottom:24px">현재 이 기기에만 저장 중</div>
 
-    <div style="padding:16px;background:rgba(200,169,110,0.07);border:1px solid rgba(200,169,110,0.2);border-radius:10px;margin-bottom:24px;font-size:12px;color:var(--muted);line-height:1.8">
-      🚧 <strong style="color:var(--accent)">준비 중인 기능이에요</strong><br>
-      현재는 localStorage(이 기기)에 자동저장 중이에요.<br>
-      클라우드 로그인 기능은 추후 업데이트 예정이에요.
+    <!-- 로그인 폼 -->
+    <div id="login-form-wrap">
+      <div style="margin-bottom:14px">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px">이메일</div>
+        <input id="login-email" type="email" placeholder="example@email.com"
+          style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:10px 14px;border-radius:9px;outline:none;"
+          onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div style="margin-bottom:8px">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px">비밀번호 (6자 이상)</div>
+        <input id="login-password" type="password" placeholder="••••••••"
+          style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:10px 14px;border-radius:9px;outline:none;"
+          onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div id="login-error" style="font-size:12px;color:var(--danger);min-height:18px;margin-bottom:12px"></div>
+      <button id="login-submit-btn" onclick="doLogin()" style="width:100%;background:var(--accent);border:none;color:#0a0c10;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;padding:12px;border-radius:9px;cursor:pointer;margin-bottom:8px">
+        로그인
+      </button>
+      <button id="signup-submit-btn" onclick="doSignup()" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:12px;border-radius:9px;cursor:pointer;">
+        처음이에요 · 회원가입
+      </button>
+      <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:16px">로그인하면 여러 기기에서 데이터가 동기화돼요</div>
     </div>
 
-    <div style="margin-bottom:14px">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">이메일</div>
-      <input type="email" placeholder="example@email.com" disabled
-        style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:10px 14px;border-radius:9px;outline:none;cursor:not-allowed;opacity:0.6">
+    <!-- 로그인 완료 상태 -->
+    <div id="login-logged-wrap" style="display:none">
+      <div style="padding:16px;background:rgba(110,200,154,0.07);border:1px solid rgba(110,200,154,0.2);border-radius:10px;margin-bottom:20px;font-size:13px;color:var(--success);text-align:center">
+        ✓ 클라우드 자동저장 중
+      </div>
+      <button onclick="doLogout()" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:12px;border-radius:9px;cursor:pointer;">
+        로그아웃
+      </button>
     </div>
-    <div style="margin-bottom:24px">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">비밀번호</div>
-      <input type="password" placeholder="••••••••" disabled
-        style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:10px 14px;border-radius:9px;outline:none;cursor:not-allowed;opacity:0.6">
-    </div>
-
-    <button disabled style="width:100%;background:var(--surface2);border:none;color:var(--muted);font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;padding:12px;border-radius:9px;cursor:not-allowed;opacity:0.6;margin-bottom:12px">
-      로그인 (준비 중)
-    </button>
-    <div style="text-align:center;font-size:12px;color:var(--muted)">현재 이 기기에 자동저장 중 · 데이터 손실 없음</div>
   </div>
 </div>
 
