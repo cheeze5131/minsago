@@ -3263,7 +3263,7 @@ async function doSignup() {
 
 async function doLogout() {
   await _sb.auth.signOut();
-  closeLogin();
+  location.reload();
 }
 
 // 인증 상태 변경 감지
