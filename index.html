@@ -1860,17 +1860,42 @@ function renderTasks() {
   const container = document.getElementById('dash-tasks');
   container.innerHTML = '';
   if (tasks.length === 0) return;
-  tasks.forEach((task, i) => {
+
+  const aiTasks   = tasks.map((t, i) => ({ ...t, i })).filter(t => t.source === 'ai');
+  const userTasks = tasks.map((t, i) => ({ ...t, i })).filter(t => t.source !== 'ai');
+
+  function makeRow(task) {
     const row = document.createElement('div');
     row.className = 'task-row';
     row.innerHTML = `
-      <div class="task-check${task.done ? ' done' : ''}" onclick="toggleTaskDyn(${i})"></div>
-      <div class="task-text${task.done ? ' done' : ''}" ondblclick="editTaskText(${i}, this)" style="flex:1;cursor:text" title="더블클릭으로 편집">${task.text}</div>
+      <div class="task-check${task.done ? ' done' : ''}" onclick="toggleTaskDyn(${task.i})"></div>
+      <div class="task-text${task.done ? ' done' : ''}" ondblclick="editTaskText(${task.i}, this)" style="flex:1;cursor:text" title="더블클릭으로 편집">${task.text}</div>
       <span class="task-tag ${task.cls}">${task.label}</span>
-      <button class="task-edit-btn" onclick="deleteTask(${i})" title="삭제">✕</button>
+      <button class="task-edit-btn" onclick="deleteTask(${task.i})" title="삭제">✕</button>
     `;
-    container.appendChild(row);
-  });
+    return row;
+  }
+
+  function makeLabel(text) {
+    const el = document.createElement('div');
+    el.style.cssText = 'font-size:10px;color:var(--muted);letter-spacing:0.06em;padding:6px 2px 3px;opacity:0.7';
+    el.textContent = text;
+    return el;
+  }
+
+  if (aiTasks.length > 0) {
+    container.appendChild(makeLabel('✨ AI 추천'));
+    aiTasks.forEach(t => container.appendChild(makeRow(t)));
+  }
+  if (aiTasks.length > 0 && userTasks.length > 0) {
+    const divider = document.createElement('div');
+    divider.style.cssText = 'border-top:1px solid var(--border);margin:8px 0';
+    container.appendChild(divider);
+  }
+  if (userTasks.length > 0) {
+    container.appendChild(makeLabel('📝 내 할 일'));
+    userTasks.forEach(t => container.appendChild(makeRow(t)));
+  }
 }
 
 function toggleTaskDyn(i) {
@@ -1924,7 +1949,7 @@ function setNewTag(cls, label) {
 function confirmAddTask() {
   const text = document.getElementById('new-task-text').value.trim();
   if (!text) return;
-  tasks.push({ text, cls: newTaskTag.cls, label: newTaskTag.label, done: false });
+  tasks.push({ text, cls: newTaskTag.cls, label: newTaskTag.label, done: false, source: 'user' });
   saveDashTasks();
   renderTasks();
   closeAddTask();
@@ -2000,7 +2025,7 @@ async function recommendTasks() {
     const tagMap = { '성적': { cls: 'tag-green', label: '성적' }, '자소서': { cls: 'tag-gold', label: '자소서' }, '면접': { cls: 'tag-blue', label: '면접' }, '기타': { cls: 'tag-gold', label: '중요' } };
     items.forEach(item => {
       const t = tagMap[item.tag] || tagMap['기타'];
-      tasks.push({ text: item.text, cls: t.cls, label: t.label, done: false });
+      tasks.push({ text: item.text, cls: t.cls, label: t.label, done: false, source: 'ai' });
     });
     saveDashTasks();
     renderTasks();
