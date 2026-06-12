@@ -90,6 +90,9 @@
     from { opacity: 0; transform: translateY(-6px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+  @keyframes blink {
+    0%, 100% { opacity: 0.2; } 50% { opacity: 1; }
+  }
 
   /* 상위 탭 버튼 */
   .nav-tab {
@@ -714,6 +717,9 @@
         <button onclick="showSection('strategy',this)">나만의 전략 메모</button>
       </div>
     </div>
+    <div class="nav-group">
+      <button class="nav-tab" onclick="showSection('chat',this)">💬 AI 상담</button>
+    </div>
 
   </div>
   <button id="nav-login-btn" onclick="openLogin()" class="login-btn">로그인</button>
@@ -744,6 +750,8 @@
   <button onclick="showSection('news',this);closeMobileMenu()">뉴스 & AI 요약</button>
   <div class="mobile-cat">📋 전략</div>
   <button onclick="showSection('strategy',this);closeMobileMenu()">전형 정보 & 전략 메모</button>
+  <div class="mobile-cat">💬 AI 상담</div>
+  <button onclick="showSection('chat',this);closeMobileMenu()">민사고 입시 AI 상담</button>
 </div>
 
 <main>
@@ -783,21 +791,19 @@
   <!-- 합격 확률 요약 카드 -->
   <div class="grid-2" style="margin-bottom:16px">
     <div class="card" id="dash-prob-card" style="border-color:rgba(200,169,110,0.2);display:none">
-      <div class="card-title">🎯 최근 합격 가능성 분석</div>
-      <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:12px">
-        <div>
-          <span class="stat-big" id="dash-prob-num" style="font-size:36px">0</span>
-          <span style="font-size:18px;color:var(--accent);font-weight:600">%</span>
-        </div>
-        <div>
-          <div id="dash-prob-label" style="font-size:13px;font-weight:500;margin-bottom:2px"></div>
-          <div id="dash-prob-date" style="font-size:11px;color:var(--muted)"></div>
+      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+        🎯 합격 가능성 추이
+        <div style="display:flex;align-items:baseline;gap:4px">
+          <span class="stat-big" id="dash-prob-num" style="font-size:28px">0</span>
+          <span style="font-size:15px;color:var(--accent);font-weight:600">%</span>
+          <span id="dash-prob-label" style="font-size:11px;margin-left:4px"></span>
         </div>
       </div>
-      <div style="height:7px;background:var(--surface2);border-radius:99px;overflow:hidden">
-        <div id="dash-prob-bar" style="height:100%;width:0%;border-radius:99px;transition:width 1s cubic-bezier(.4,0,.2,1)"></div>
+      <canvas id="prob-graph" style="width:100%;height:120px;display:block;margin:8px 0"></canvas>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+        <div id="dash-prob-date" style="font-size:11px;color:var(--muted)"></div>
+        <div style="font-size:11px;color:var(--muted)">합격 분석 탭에서 분석 실행</div>
       </div>
-      <div style="font-size:11px;color:var(--muted);margin-top:10px">성적 탭에서 다시 분석할 수 있어요</div>
     </div>
     <div class="card" id="dash-prob-empty" style="border-color:rgba(200,169,110,0.1);border-style:dashed">
       <div class="card-title">🎯 합격 가능성 분석</div>
@@ -1770,6 +1776,28 @@
   </div>
 </section>
 
+<!-- ════════════ AI 상담 ════════════ -->
+<section class="section" id="chat">
+  <div class="page-header">
+    <div class="page-title">💬 AI 입시 상담</div>
+    <div class="page-subtitle">합격 가능성 향상, 학업 고민, 입시 전략을 AI와 자유롭게 상담하세요</div>
+  </div>
+  <div class="card" style="display:flex;flex-direction:column;height:calc(100vh - 260px);min-height:420px">
+    <div id="chat-messages" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding-right:4px"></div>
+    <div style="padding-top:14px;border-top:1px solid var(--border);display:flex;gap:8px;margin-top:12px">
+      <textarea id="chat-input" rows="2" placeholder="민사고 입시에 대해 무엇이든 물어보세요... (Enter 전송 / Shift+Enter 줄바꿈)"
+        style="flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:13px;padding:10px 14px;border-radius:10px;outline:none;resize:none;line-height:1.6"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <button onclick="sendChat()" id="chat-send-btn"
+          style="background:var(--accent);border:none;color:#0a0c10;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:10px;cursor:pointer">전송</button>
+        <button onclick="clearChat()"
+          style="background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Noto Sans KR',sans-serif;font-size:11px;padding:6px;border-radius:8px;cursor:pointer">초기화</button>
+      </div>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <script>
@@ -1810,6 +1838,7 @@ function showSection(id, btnEl) {
   }
   save('activeTab', id);
   if (id === 'analysis') updateAnalysisSummary();
+  if (id === 'chat') initChat();
 }
 
 function scrollToSchool(anchor) {
@@ -2612,10 +2641,15 @@ async function analyzeAdmission() {
     btn.disabled = false;
     timerEl.textContent = '';
 
-    // 대시보드에 저장
+    // 대시보드에 저장 + 히스토리 기록
     const now = new Date();
     const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    const dateShort = `${now.getMonth()+1}/${now.getDate()}`;
     save('lastProb', { prob, date: dateStr });
+    const history = load('probHistory', []);
+    history.push({ prob, date: dateStr, dateShort });
+    if (history.length > 20) history.splice(0, history.length - 20);
+    save('probHistory', history);
     updateDashProb();
   } catch(e) {
     text.innerHTML = '<div style="color:var(--danger);font-size:13px">분석 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.</div>';
@@ -2636,25 +2670,227 @@ function updateDashProb() {
   document.getElementById('dash-prob-num').textContent = data.prob;
   document.getElementById('dash-prob-date').textContent = data.date + ' 기준';
 
-  const bar = document.getElementById('dash-prob-bar');
   const label = document.getElementById('dash-prob-label');
-  setTimeout(() => { bar.style.width = data.prob + '%'; }, 100);
+  const numEl = document.getElementById('dash-prob-num');
 
   if (data.prob >= 70) {
-    bar.style.background = 'linear-gradient(90deg,#6ec89a,#a8e8c0)';
-    label.textContent = '합격 가능성 높음'; label.style.color = 'var(--success)';
-    document.getElementById('dash-prob-num').style.color = 'var(--success)';
+    label.textContent = '합격 가능성 높음 🎉'; label.style.color = 'var(--success)';
+    numEl.style.color = 'var(--success)';
   } else if (data.prob >= 45) {
-    bar.style.background = 'linear-gradient(90deg,var(--accent),var(--accent2))';
-    label.textContent = '노력하면 가능'; label.style.color = 'var(--accent)';
-    document.getElementById('dash-prob-num').style.color = 'var(--accent)';
+    label.textContent = '노력하면 가능 💪'; label.style.color = 'var(--accent)';
+    numEl.style.color = 'var(--accent)';
   } else {
-    bar.style.background = 'linear-gradient(90deg,#e06060,#e89090)';
-    label.textContent = '추가 준비 필요'; label.style.color = 'var(--danger)';
-    document.getElementById('dash-prob-num').style.color = 'var(--danger)';
+    label.textContent = '추가 준비 필요 📚'; label.style.color = 'var(--danger)';
+    numEl.style.color = 'var(--danger)';
   }
+
+  // 꺾은선 그래프
+  drawProbGraph();
 }
 
+function drawProbGraph() {
+  const canvas = document.getElementById('prob-graph');
+  if (!canvas) return;
+  const history = load('probHistory', []);
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.offsetWidth || 300;
+  const H = 120;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  if (history.length === 0) return;
+
+  const PAD = { top: 16, right: 16, bottom: 28, left: 32 };
+  const gW = W - PAD.left - PAD.right;
+  const gH = H - PAD.top  - PAD.bottom;
+
+  // 격자선
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.lineWidth = 1;
+  [25, 50, 75, 100].forEach(v => {
+    const y = PAD.top + gH - (v / 100) * gH;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + gW, y); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = `9px 'Noto Sans KR', sans-serif`;
+    ctx.fillText(v + '%', 0, y + 3);
+  });
+
+  const pts = history.map((h, i) => ({
+    x: PAD.left + (history.length === 1 ? gW / 2 : (i / (history.length - 1)) * gW),
+    y: PAD.top + gH - (Math.min(100, Math.max(0, h.prob)) / 100) * gH,
+    prob: h.prob,
+    label: h.dateShort || ''
+  }));
+
+  // 선
+  const grad = ctx.createLinearGradient(PAD.left, 0, PAD.left + gW, 0);
+  grad.addColorStop(0, '#c8a96e');
+  grad.addColorStop(1, '#6ec89a');
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+  ctx.stroke();
+
+  // 점 + 라벨
+  pts.forEach((p, i) => {
+    const isLast = i === pts.length - 1;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, isLast ? 5 : 3, 0, Math.PI * 2);
+    ctx.fillStyle = isLast ? '#c8a96e' : 'rgba(200,169,110,0.6)';
+    ctx.fill();
+    if (isLast || history.length <= 6 || i % Math.ceil(history.length / 6) === 0) {
+      ctx.fillStyle = 'rgba(255,255,255,0.45)';
+      ctx.font = `9px 'Noto Sans KR', sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(p.label, p.x, H - PAD.bottom + 11);
+      if (isLast) {
+        ctx.fillStyle = '#c8a96e';
+        ctx.font = `bold 10px 'Noto Sans KR', sans-serif`;
+        ctx.fillText(p.prob + '%', p.x, p.y - 8);
+      }
+    }
+  });
+}
+
+
+// ══════════════════════════════════════
+//  AI 상담 채팅
+// ══════════════════════════════════════
+let chatHistory = [];
+
+function getChatSystemPrompt() {
+  const grades   = load('gradeData', {});
+  const essays   = load('essays', {});
+  const ivDone   = load('ivDone', {});
+  const awards   = load('awards', []);
+  const clubs    = load('clubs', []);
+  const volunteer = load('volunteer', []);
+  const lastProb = load('lastProb', null);
+  const essayCount = Object.values(essays).filter(v => v && v.trim().length > 20).length;
+  const ivDoneCount = Object.values(ivDone).filter(Boolean).length;
+
+  return `당신은 민족사관고등학교(민사고) 입시 전문 컨설턴트이자 학습 멘토입니다.
+학생의 현재 상황을 바탕으로 친절하고 구체적인 조언을 해주세요.
+
+[학생 현황]
+- 합격 가능성 분석: ${lastProb ? lastProb.prob + '% (' + lastProb.date + ')' : '미분석'}
+- 자소서: 5개 항목 중 ${essayCount}개 작성 완료
+- 면접 예상질문: ${ivDoneCount}개 완료
+- 대회·수상: ${awards.length}건
+- 동아리: ${clubs.length}개
+- 봉사활동: ${volunteer.length}건
+
+답변 지침:
+- 따뜻하고 격려하는 톤으로 답변
+- 추상적인 말 대신 구체적이고 실행 가능한 조언
+- 민사고 입시 특성(학업 우수성, 리더십, 자기주도성)을 고려
+- 필요하면 적절히 줄바꿈과 번호 목록 활용
+- 한국어로 답변`;
+}
+
+function initChat() {
+  const container = document.getElementById('chat-messages');
+  if (!container || chatHistory.length > 0) return;
+  const welcome = document.createElement('div');
+  welcome.style.cssText = 'text-align:center;padding:24px 16px;color:var(--muted);font-size:13px;line-height:1.8';
+  welcome.innerHTML = `<div style="font-size:28px;margin-bottom:8px">💬</div>
+    <div style="color:var(--text);font-weight:500;margin-bottom:6px">민사고 AI 입시 상담</div>
+    자소서 작성 고민, 면접 준비 방법, 성적 향상 전략,<br>입시 일정까지 무엇이든 물어보세요.`;
+  container.appendChild(welcome);
+}
+
+function appendMessage(role, text) {
+  const container = document.getElementById('chat-messages');
+  const isUser = role === 'user';
+  const wrap = document.createElement('div');
+  wrap.style.cssText = `display:flex;justify-content:${isUser ? 'flex-end' : 'flex-start'};`;
+  const bubble = document.createElement('div');
+  bubble.style.cssText = `max-width:80%;padding:10px 14px;border-radius:${isUser ? '14px 14px 4px 14px' : '14px 14px 14px 4px'};
+    font-size:13px;line-height:1.7;white-space:pre-wrap;word-break:break-word;
+    background:${isUser ? 'var(--accent)' : 'var(--surface2)'};
+    color:${isUser ? '#0a0c10' : 'var(--text)'};
+    border:${isUser ? 'none' : '1px solid var(--border)'};`;
+  bubble.textContent = text;
+  wrap.appendChild(bubble);
+  container.appendChild(wrap);
+  container.scrollTop = container.scrollHeight;
+}
+
+function appendTyping() {
+  const container = document.getElementById('chat-messages');
+  const wrap = document.createElement('div');
+  wrap.id = 'chat-typing';
+  wrap.style.cssText = 'display:flex;justify-content:flex-start;';
+  wrap.innerHTML = `<div style="padding:10px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:14px 14px 14px 4px;color:var(--muted);font-size:13px">
+    <span style="animation:blink 1.2s infinite">●</span>
+    <span style="animation:blink 1.2s infinite 0.4s">●</span>
+    <span style="animation:blink 1.2s infinite 0.8s">●</span>
+  </div>`;
+  container.appendChild(wrap);
+  container.scrollTop = container.scrollHeight;
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const btn   = document.getElementById('chat-send-btn');
+  const text  = input.value.trim();
+  if (!text || btn.disabled) return;
+
+  // 첫 메시지 시 환영 메시지 제거
+  const container = document.getElementById('chat-messages');
+  const welcome = container.querySelector('div[style*="text-align:center"]');
+  if (welcome) welcome.remove();
+
+  input.value = '';
+  input.style.height = 'auto';
+  appendMessage('user', text);
+  chatHistory.push({ role: 'user', content: text });
+
+  btn.disabled = true;
+  btn.textContent = '...';
+  appendTyping();
+
+  try {
+    const res = await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: getChatSystemPrompt(),
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.map(c => c.text || '').join('') || '답변을 가져오지 못했어요.';
+
+    document.getElementById('chat-typing')?.remove();
+    chatHistory.push({ role: 'assistant', content: reply });
+    appendMessage('assistant', reply);
+  } catch(e) {
+    document.getElementById('chat-typing')?.remove();
+    appendMessage('assistant', '오류가 발생했어요. 잠시 후 다시 시도해주세요.');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '전송';
+  input.focus();
+}
+
+function clearChat() {
+  if (!confirm('대화 내용을 모두 지울까요?')) return;
+  chatHistory = [];
+  const container = document.getElementById('chat-messages');
+  container.innerHTML = '';
+  initChat();
+}
 
 // ── Clear All Data
 function clearAllData() {
