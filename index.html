@@ -1127,6 +1127,10 @@
           <div class="char-count">현재 <span id="ec0">0</span>자 / 권장 300자</div>
           <span style="font-size:11px;color:var(--success)">✓ 자동저장</span>
         </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <button onclick="reviewEssay(0,this)" style="background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.3);color:var(--accent);font-size:12px;padding:6px 14px;border-radius:7px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">✨ AI 첨삭받기</button>
+          <div id="ef0" style="display:none;margin-top:12px;padding:14px;background:rgba(200,169,110,0.05);border:1px solid rgba(200,169,110,0.2);border-radius:10px;font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap"></div>
+        </div>
       </div>
     </div>
 
@@ -1142,6 +1146,10 @@
         <div class="essay-meta">
           <div class="char-count">현재 <span id="ec1">0</span>자 / 권장 300자</div>
           <span style="font-size:11px;color:var(--success)">✓ 자동저장</span>
+        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <button onclick="reviewEssay(1,this)" style="background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.3);color:var(--accent);font-size:12px;padding:6px 14px;border-radius:7px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">✨ AI 첨삭받기</button>
+          <div id="ef1" style="display:none;margin-top:12px;padding:14px;background:rgba(200,169,110,0.05);border:1px solid rgba(200,169,110,0.2);border-radius:10px;font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap"></div>
         </div>
       </div>
     </div>
@@ -1160,6 +1168,10 @@
           <div class="char-count">현재 <span id="ec2">0</span>자 / 권장 300자</div>
           <span style="font-size:11px;color:var(--success)">✓ 자동저장</span>
         </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <button onclick="reviewEssay(2,this)" style="background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.3);color:var(--accent);font-size:12px;padding:6px 14px;border-radius:7px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">✨ AI 첨삭받기</button>
+          <div id="ef2" style="display:none;margin-top:12px;padding:14px;background:rgba(200,169,110,0.05);border:1px solid rgba(200,169,110,0.2);border-radius:10px;font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap"></div>
+        </div>
       </div>
     </div>
 
@@ -1175,6 +1187,10 @@
         <div class="essay-meta">
           <div class="char-count">현재 <span id="ec3">0</span>자 / 권장 300자</div>
           <span style="font-size:11px;color:var(--success)">✓ 자동저장</span>
+        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <button onclick="reviewEssay(3,this)" style="background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.3);color:var(--accent);font-size:12px;padding:6px 14px;border-radius:7px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">✨ AI 첨삭받기</button>
+          <div id="ef3" style="display:none;margin-top:12px;padding:14px;background:rgba(200,169,110,0.05);border:1px solid rgba(200,169,110,0.2);border-radius:10px;font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap"></div>
         </div>
       </div>
     </div>
@@ -1204,6 +1220,10 @@
         <div class="essay-meta">
           <div class="char-count">현재 <span id="ec4">0</span>자 / 권장 900자 (3권 × 300자)</div>
           <span style="font-size:11px;color:var(--success)">✓ 자동저장</span>
+        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <button onclick="reviewEssay(4,this)" style="background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.3);color:var(--accent);font-size:12px;padding:6px 14px;border-radius:7px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">✨ AI 첨삭받기</button>
+          <div id="ef4" style="display:none;margin-top:12px;padding:14px;background:rgba(200,169,110,0.05);border:1px solid rgba(200,169,110,0.2);border-radius:10px;font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap"></div>
         </div>
       </div>
     </div>
@@ -1839,6 +1859,7 @@ function showSection(id, btnEl) {
   save('activeTab', id);
   if (id === 'analysis') updateAnalysisSummary();
   if (id === 'chat') initChat();
+  if (id === 'interview') injectInterviewEvalButtons();
 }
 
 function scrollToSchool(anchor) {
@@ -2890,6 +2911,128 @@ function clearChat() {
   const container = document.getElementById('chat-messages');
   container.innerHTML = '';
   initChat();
+}
+
+// ══════════════════════════════════════
+//  자소서 AI 첨삭
+// ══════════════════════════════════════
+const ESSAY_TITLES = ['교과학습활동', '교과 외 활동', '소질과 적성', '진로·도전계획', '독서 소감'];
+
+async function reviewEssay(idx, btn) {
+  const text = document.getElementById('ea' + idx)?.value?.trim();
+  const feedEl = document.getElementById('ef' + idx);
+  if (!text || text.length < 30) {
+    feedEl.style.display = 'block';
+    feedEl.textContent = '✏️ 먼저 자소서 내용을 작성해 주세요 (30자 이상).';
+    return;
+  }
+  btn.textContent = '첨삭 중...'; btn.disabled = true;
+  feedEl.style.display = 'block';
+  feedEl.textContent = '⏳ AI가 읽고 있어요...';
+
+  const prompt = `당신은 민족사관고등학교(민사고) 입시 자기소개서 전문 첨삭 컨설턴트입니다.
+
+[항목] ${ESSAY_TITLES[idx]}
+[학생 작성 내용]
+${text}
+
+아래 구조로 첨삭해주세요:
+
+✅ 잘된 점
+• (구체적으로 2~3가지)
+
+⚠️ 보완할 점
+• (구체적으로 2~3가지)
+
+✏️ 수정 제안
+(가장 중요한 한 문장을 더 강하게 고친 버전을 제시해주세요)
+
+💡 한 줄 총평
+(민사고 입시 관점에서 이 항목의 현재 수준)`;
+
+  try {
+    const res = await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 800,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    feedEl.textContent = data.content?.map(c => c.text || '').join('') || '첨삭을 가져오지 못했어요.';
+  } catch(e) {
+    feedEl.textContent = '오류가 발생했어요. 잠시 후 다시 시도해주세요.';
+  }
+  btn.textContent = '✨ 다시 첨삭받기'; btn.disabled = false;
+}
+
+// ══════════════════════════════════════
+//  면접 답변 AI 평가
+// ══════════════════════════════════════
+function injectInterviewEvalButtons() {
+  document.querySelectorAll('.q-card').forEach((card, i) => {
+    const qText = card.querySelector('.q-text')?.textContent?.trim() || '';
+    const answer = card.querySelector('.answer-area');
+    const tip = card.querySelector('.q-tip');
+    if (!answer || !tip || card.querySelector('.iv-eval-btn')) return;
+
+    const feedId = 'ivf-' + i;
+    const btn = document.createElement('button');
+    btn.className = 'iv-eval-btn';
+    btn.textContent = '🤖 AI 평가';
+    btn.style.cssText = 'margin-top:8px;background:rgba(110,168,200,0.12);border:1px solid rgba(110,168,200,0.3);color:var(--info);font-size:11px;padding:4px 12px;border-radius:6px;cursor:pointer;font-family:\'Noto Sans KR\',sans-serif;display:block';
+    btn.onclick = () => evaluateAnswer(btn, qText, answer, document.getElementById(feedId));
+
+    const feedEl = document.createElement('div');
+    feedEl.id = feedId;
+    feedEl.style.cssText = 'display:none;margin-top:10px;padding:12px;background:rgba(110,168,200,0.05);border:1px solid rgba(110,168,200,0.2);border-radius:9px;font-size:12px;line-height:1.8;color:var(--text);white-space:pre-wrap';
+
+    tip.after(btn, feedEl);
+  });
+}
+
+async function evaluateAnswer(btn, question, answerEl, feedEl) {
+  const answer = answerEl.value.trim();
+  if (!answer || answer.length < 20) {
+    feedEl.style.display = 'block';
+    feedEl.textContent = '✏️ 먼저 답변을 작성해 주세요.';
+    return;
+  }
+  btn.textContent = '평가 중...'; btn.disabled = true;
+  feedEl.style.display = 'block';
+  feedEl.textContent = '⏳ 평가하고 있어요...';
+
+  const prompt = `당신은 민족사관고등학교(민사고) 면접 전문 코치입니다.
+
+[면접 질문] ${question}
+[학생 답변] ${answer}
+
+아래 형식으로 평가해주세요:
+
+⭐ 점수: X / 10점
+
+✅ 잘한 점 (1~2가지)
+⚠️ 보완할 점 (1~2가지)
+💬 더 강한 답변을 위한 한 줄 팁`;
+
+  try {
+    const res = await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 500,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    feedEl.textContent = data.content?.map(c => c.text || '').join('') || '평가를 가져오지 못했어요.';
+  } catch(e) {
+    feedEl.textContent = '오류가 발생했어요. 잠시 후 다시 시도해주세요.';
+  }
+  btn.textContent = '🤖 다시 평가'; btn.disabled = false;
 }
 
 // ── Clear All Data
