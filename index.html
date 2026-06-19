@@ -2896,7 +2896,7 @@ async function sendChat() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
-        max_tokens: 1000,
+        max_tokens: 4096,
         system: getChatSystemPrompt(),
         messages: chatHistory
       })
@@ -3352,7 +3352,7 @@ async function analyzeFile(mode) {
     try {
       const res = await fetch('/api/claude', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ model:'claude-sonnet-4-5', max_tokens:1000, messages:[{role:'user', content:buildFileContent(prompt)}] })
+        body: JSON.stringify({ model:'claude-sonnet-4-5', max_tokens:4096, messages:[{role:'user', content:buildFileContent(prompt)}] })
       });
       const data = await res.json();
       const raw = data.content?.map(c=>c.text||'').join('') || '';
