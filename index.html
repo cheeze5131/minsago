@@ -2073,7 +2073,7 @@ async function recommendTasks() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5',
         max_tokens: 600,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -2527,7 +2527,7 @@ async function summarizeNews() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5',
         max_tokens: 2000,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -2606,7 +2606,7 @@ async function analyzeAdmission() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5',
         max_tokens: 300,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -2895,7 +2895,7 @@ async function sendChat() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5',
         max_tokens: 1000,
         system: getChatSystemPrompt(),
         messages: chatHistory
@@ -3107,7 +3107,7 @@ ${text}
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5',
         max_tokens: 800,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -3174,7 +3174,7 @@ async function evaluateAnswer(btn, question, answerEl, feedEl) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5',
         max_tokens: 500,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -3352,7 +3352,7 @@ async function analyzeFile(mode) {
     try {
       const res = await fetch('/api/claude', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user', content:buildFileContent(prompt)}] })
+        body: JSON.stringify({ model:'claude-sonnet-4-5', max_tokens:1000, messages:[{role:'user', content:buildFileContent(prompt)}] })
       });
       const data = await res.json();
       const raw = data.content?.map(c=>c.text||'').join('') || '';
@@ -3382,7 +3382,7 @@ async function analyzeFile(mode) {
     try {
       const res = await fetch('/api/claude', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1500, messages:[{role:'user', content:buildFileContent(prompt)}] })
+        body: JSON.stringify({ model:'claude-sonnet-4-5', max_tokens:1500, messages:[{role:'user', content:buildFileContent(prompt)}] })
       });
       const data = await res.json();
       const raw = data.content?.map(c=>c.text||'').join('') || '';
@@ -3736,7 +3736,7 @@ ${books.map(b=>`- [${b.lang==='en'?'영어':'한국어'}] ${b.title}`).join('\n'
   try {
     const res = await fetch('/api/claude', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1200,
+      body: JSON.stringify({ model:'claude-sonnet-4-5', max_tokens:1200,
         messages:[{ role:'user', content: prompt }]
       })
     });
